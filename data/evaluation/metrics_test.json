@@ -1,0 +1,72 @@
+{
+  "split": "test",
+  "n_reports": 13,
+  "relevance": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 12,
+    "fp": 0,
+    "fn": 0,
+    "tn": 1
+  },
+  "event_detection": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 14,
+    "fp": 0,
+    "fn": 0
+  },
+  "field_accuracy_overall": 1.0,
+  "field_accuracy": {
+    "activity.action": 1.0,
+    "context.discipline": 1.0,
+    "context.line_number": 1.0,
+    "context.location": 1.0,
+    "execution.assertion": 1.0,
+    "execution.progress_percent": 1.0,
+    "execution.status": 1.0,
+    "quantity.completed": 1.0,
+    "quantity.total": 1.0,
+    "time.time_certainty": 1.0
+  },
+  "datetime_accuracy": {
+    "start": 1.0,
+    "end": 1.0,
+    "certainty": 1.0
+  },
+  "evidence_coverage": 1.0,
+  "by_case_kind": {
+    "ambiguous": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "irrelevant_negative": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "multi": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    },
+    "noisy": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "normal": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "partial": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0
+    }
+  }
+}

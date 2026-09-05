@@ -1,0 +1,12 @@
+warning_code
+missing_line_number
+missing_location
+missing_time
+ambiguous_activity
+possible_duplicate
+conflicting_report
+relative_date_resolved
+negated_statement
+uncertain_statement
+quantity_partial
+no_schedule_candidate

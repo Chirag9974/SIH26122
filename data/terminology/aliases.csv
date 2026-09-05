@@ -1,0 +1,238 @@
+kind,canonical,surface_form
+action,erection,erection
+action,erection,erect
+action,erection,erected
+action,erection,erecting
+action,erection,erectn
+action,erection,erectio
+action,erection,fitted
+action,erection,fitting up
+action,erection,put up
+action,welding,welding
+action,welding,weld
+action,welding,welded
+action,welding,wldg
+action,welding,welding done
+action,fit-up,fit-up
+action,fit-up,fit up
+action,fit-up,fitup
+action,fit-up,fitted up
+action,hydrotest,hydrotest
+action,hydrotest,hydro test
+action,hydrotest,hydro-test
+action,hydrotest,hydrotesting
+action,hydrotest,pressure test
+action,painting,painting
+action,painting,paint
+action,painting,painted
+action,painting,pntg
+action,painting,coating
+action,excavation,excavation
+action,excavation,excavate
+action,excavation,excavated
+action,excavation,excvn
+action,excavation,digging
+action,shuttering,shuttering
+action,shuttering,shutter
+action,shuttering,shuttered
+action,shuttering,formwork
+action,shuttering,form work
+action,concreting,concreting
+action,concreting,concrete
+action,concreting,concreted
+action,concreting,pour
+action,concreting,poured
+action,concreting,casting
+action,concreting,cast
+action,backfilling,backfilling
+action,backfilling,backfill
+action,backfilling,backfilled
+action,backfilling,back filling
+action,cable pulling,cable pulling
+action,cable pulling,cable pull
+action,cable pulling,pulled cable
+action,cable pulling,cable laying
+action,cable pulling,cbl pulling
+action,termination,termination
+action,termination,terminate
+action,termination,terminated
+action,termination,termn
+action,termination,glanding
+action,installation,installation
+action,installation,install
+action,installation,installed
+action,installation,instl
+action,installation,erected in place
+action,installation,fixing
+action,installation,fixed
+action,installation,mounted
+action,earthing,earthing
+action,earthing,earth pit
+action,earthing,grounding
+action,earthing,earthed
+action,loop check,loop check
+action,loop check,loop checking
+action,loop check,loop checked
+action,loop check,loop test
+action,calibration,calibration
+action,calibration,calibrate
+action,calibration,calibrated
+action,calibration,calib
+action,tubing,tubing
+action,tubing,impulse tubing
+action,tubing,tube run
+action,tubing,tubing laid
+action,alignment,alignment
+action,alignment,align
+action,alignment,aligned
+action,alignment,algn
+action,grouting,grouting
+action,grouting,grout
+action,grouting,grouted
+action,bolting,bolting
+action,bolting,bolt-up
+action,bolting,bolt up
+action,bolting,bolted
+action,bolting,torquing
+action,grating,grating
+action,grating,grating installation
+action,grating,grating laid
+discipline,Piping,piping
+discipline,Piping,pip
+discipline,Piping,pipe
+discipline,Piping,mech-piping
+discipline,Civil,civil
+discipline,Civil,civ
+discipline,Civil,cvl
+discipline,Electrical,electrical
+discipline,Electrical,ele
+discipline,Electrical,elec
+discipline,Electrical,elect
+discipline,Instrumentation,instrumentation
+discipline,Instrumentation,ins
+discipline,Instrumentation,inst
+discipline,Instrumentation,instru
+discipline,Instrumentation,e&i
+discipline,Equipment,equipment
+discipline,Equipment,eqp
+discipline,Equipment,equip
+discipline,Equipment,mechanical
+discipline,Equipment,mech
+discipline,Structural,structural
+discipline,Structural,str
+discipline,Structural,struct
+discipline,Structural,steel
+location,Rack A,rack a
+location,Rack A,rack-a
+location,Rack A,rb-a
+location,Rack A,r/a
+location,Rack A,rack_a
+location,Rack B,rack b
+location,Rack B,rack-b
+location,Rack B,rb-b
+location,Rack B,r/b
+location,Rack B,rack_b
+location,Rack C,rack c
+location,Rack C,rack-c
+location,Rack C,rb-c
+location,Rack C,r/c
+location,Unit 100,unit 100
+location,Unit 100,u-100
+location,Unit 100,u100
+location,Unit 100,unit-100
+location,Unit 200,unit 200
+location,Unit 200,u-200
+location,Unit 200,u200
+location,Unit 200,unit-200
+location,Unit 300,unit 300
+location,Unit 300,u-300
+location,Unit 300,u300
+location,Unit 300,unit-300
+location,Area 10,area 10
+location,Area 10,a-10
+location,Area 10,ar 10
+location,Area 10,area-10
+location,Area 20,area 20
+location,Area 20,a-20
+location,Area 20,ar 20
+location,Area 20,area-20
+location,Tank Farm,tank farm
+location,Tank Farm,tf
+location,Tank Farm,tankfarm
+location,Substation Pad,substation pad
+location,Substation Pad,ss pad
+location,Substation Pad,sub-station pad
+location,Substation 1,substation 1
+location,Substation 1,ss-1
+location,Substation 1,ss 1
+location,Substation 1,substn 1
+location,MCC Room,mcc room
+location,MCC Room,mcc
+location,MCC Room,mcc-room
+location,Control Room,control room
+location,Control Room,ctrl room
+location,Control Room,cr
+location,Compressor House,compressor house
+location,Compressor House,comp house
+location,Compressor House,k-house
+location,Pipe Rack North,pipe rack north
+location,Pipe Rack North,prn
+location,Pipe Rack North,pipe rack n
+location,Cable Trench T-4,cable trench t-4
+location,Cable Trench T-4,trench t-4
+location,Cable Trench T-4,t-4 trench
+location,Wellhead Pad 2,wellhead pad 2
+location,Wellhead Pad 2,wh pad 2
+location,Wellhead Pad 2,whp-2
+status,completed,completed
+status,completed,complete
+status,completed,done
+status,completed,finished
+status,completed,closed out
+status,completed,achieved
+status,completed,compl
+status,completed,cmpltd
+status,completed,over
+status,completed,completd
+status,completed,completed
+status,completed,cmpleted
+status,completed,finshed
+status,completed,donee
+status,started,started
+status,started,commenced
+status,started,begun
+status,started,began
+status,started,started work
+status,started,taken up
+status,started,mobilised
+status,started,mobilized
+status,in_progress,in progress
+status,in_progress,ongoing
+status,in_progress,continuing
+status,in_progress,continued
+status,in_progress,under progress
+status,in_progress,wip
+status,in_progress,in-progress
+status,in_progress,progressing
+status,in_progress,balance work
+status,in_progress,partly done
+status,in_progress,still open
+status,in_progress,still pending
+status,in_progress,found incomplete
+status,suspended,suspended
+status,suspended,stopped
+status,suspended,held up
+status,suspended,on hold
+status,suspended,halted
+status,suspended,abandoned for the day
+status,cancelled,cancelled
+status,cancelled,canceled
+status,cancelled,called off
+status,cancelled,dropped
+status,not_started,not started
+status,not_started,not yet started
+status,not_started,yet to start
+status,not_started,could not start
+status,not_started,did not start
+status,not_started,no work
+status,not_started,nil progress

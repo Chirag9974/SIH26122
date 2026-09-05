@@ -1,0 +1,78 @@
+kind,canonical,abbreviation
+action,erection,erect
+action,erection,erectn
+action,erection,fitted
+action,welding,weld
+action,welding,welded
+action,welding,wldg
+action,fit-up,fit-up
+action,fit-up,fitup
+action,painting,paint
+action,painting,pntg
+action,excavation,excvn
+action,concreting,pour
+action,concreting,poured
+action,concreting,cast
+action,termination,termn
+action,installation,instl
+action,installation,fixing
+action,installation,fixed
+action,calibration,calib
+action,tubing,tubing
+action,alignment,align
+action,alignment,algn
+action,grouting,grout
+action,bolting,bolted
+discipline,Piping,piping
+discipline,Piping,pip
+discipline,Piping,pipe
+discipline,Civil,civil
+discipline,Civil,civ
+discipline,Civil,cvl
+discipline,Electrical,ele
+discipline,Electrical,elec
+discipline,Electrical,elect
+discipline,Instrumentation,ins
+discipline,Instrumentation,inst
+discipline,Instrumentation,instru
+discipline,Instrumentation,e&i
+discipline,Equipment,eqp
+discipline,Equipment,equip
+discipline,Equipment,mech
+discipline,Structural,str
+discipline,Structural,struct
+discipline,Structural,steel
+location,Rack A,rack-a
+location,Rack A,rb-a
+location,Rack A,r/a
+location,Rack A,rack_a
+location,Rack B,rack-b
+location,Rack B,rb-b
+location,Rack B,r/b
+location,Rack B,rack_b
+location,Rack C,rack-c
+location,Rack C,rb-c
+location,Rack C,r/c
+location,Unit 100,u-100
+location,Unit 100,u100
+location,Unit 200,u-200
+location,Unit 200,u200
+location,Unit 300,u-300
+location,Unit 300,u300
+location,Area 10,a-10
+location,Area 20,a-20
+location,Tank Farm,tf
+location,Substation 1,ss-1
+location,MCC Room,mcc
+location,Control Room,cr
+location,Pipe Rack North,prn
+location,Wellhead Pad 2,whp-2
+status,completed,done
+status,completed,compl
+status,completed,cmpltd
+status,completed,over
+status,completed,donee
+status,started,begun
+status,started,began
+status,in_progress,wip
+status,suspended,halted
