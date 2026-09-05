@@ -1,72 +1,90 @@
 {
-  "split": "all",
-  "n_reports": 100,
+  "split": "dev",
+  "n_reports": 138,
   "relevance": {
     "precision": 1.0,
     "recall": 1.0,
     "f1": 1.0,
-    "tp": 95,
+    "tp": 130,
     "fp": 0,
     "fn": 0,
-    "tn": 5
+    "tn": 8
   },
   "event_detection": {
-    "precision": 1.0,
+    "precision": 0.9876,
     "recall": 1.0,
-    "f1": 1.0,
-    "tp": 117,
-    "fp": 0,
+    "f1": 0.9938,
+    "tp": 159,
+    "fp": 2,
     "fn": 0
   },
-  "field_accuracy_overall": 1.0,
+  "field_accuracy_overall": 0.9925,
   "field_accuracy": {
     "activity.action": 1.0,
     "context.discipline": 1.0,
-    "context.line_number": 1.0,
+    "context.line_number": 0.9748,
     "context.location": 1.0,
     "execution.assertion": 1.0,
-    "execution.progress_percent": 1.0,
-    "execution.status": 1.0,
-    "quantity.completed": 1.0,
-    "quantity.total": 1.0,
+    "execution.progress_percent": 0.9874,
+    "execution.status": 0.9874,
+    "quantity.completed": 0.9874,
+    "quantity.total": 0.9874,
     "time.time_certainty": 1.0
   },
   "datetime_accuracy": {
     "start": 1.0,
-    "end": 0.9915,
+    "end": 0.9874,
     "certainty": 1.0
   },
   "evidence_coverage": 1.0,
   "by_case_kind": {
     "ambiguous": {
-      "tp": 10,
-      "fp": 0,
-      "fn": 0
-    },
-    "irrelevant_negative": {
-      "tp": 5,
+      "tp": 12,
       "fp": 0,
       "fn": 0
     },
     "multi": {
-      "tp": 32,
+      "tp": 45,
+      "fp": 0,
+      "fn": 0
+    },
+    "negative": {
+      "tp": 12,
       "fp": 0,
       "fn": 0
     },
     "noisy": {
+      "tp": 24,
+      "fp": 0,
+      "fn": 0
+    },
+    "normal_formal": {
+      "tp": 30,
+      "fp": 0,
+      "fn": 0
+    },
+    "normal_shorthand": {
       "tp": 20,
       "fp": 0,
       "fn": 0
     },
-    "normal": {
-      "tp": 40,
-      "fp": 0,
-      "fn": 0
-    },
     "partial": {
-      "tp": 10,
-      "fp": 0,
+      "tp": 16,
+      "fp": 2,
       "fn": 0
+    }
+  },
+  "matching": {
+    "candidate_recall_at_1": 0.1006,
+    "candidate_recall_at_3": 0.2642,
+    "candidate_recall_at_5": 0.522,
+    "candidate_recall_at_10": 1.0,
+    "total_matchable": 159,
+    "no_match_cases": 0,
+    "by_difficulty": {
+      "easy": 0,
+      "medium": 0,
+      "hard": 159
     }
   }
 }

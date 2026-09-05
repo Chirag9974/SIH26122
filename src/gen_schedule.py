@@ -18,7 +18,7 @@ from vocab import DISCIPLINES, PROJECT_ID, SIZES
 
 OUT = Path(__file__).resolve().parents[1] / "data" / "schedule" / "schedule_activities.csv"
 SEED = 26122
-TARGET = 210
+TARGET = 300  # increased from 210 for better coverage
 PROJECT_START = date(2026, 9, 1)
 
 FIELDS = [
@@ -73,12 +73,14 @@ def generate() -> list[dict]:
         l5_start = _workday(PROJECT_START + timedelta(days=rng.randint(0, 150)))
         l5_finish = _workday(l5_start + timedelta(days=rng.randint(6, 20)))
         seq[code] += 1
+
+        # Fixed: use obj template to avoid "Pull Cable Cable" etc.
+        l5_obj = work['obj'].format(size=size, ref=ref)
         rows.append({
             "project_id": PROJECT_ID,
             "wbs_code": wbs_l5,
             "activity_id": f"{code}-L5-{seq[code]:04d}",
-            "activity_name": f"{work['verb']} {work['obj'].format(size=size, ref=ref)} "
-                             f"- Work Package",
+            "activity_name": f"{work['verb']} {l5_obj} - Work Package",
             "wbs_level": "L5",
             "discipline": disc,
             "location": "",

@@ -27,10 +27,10 @@ OIL-GGS-2026,PIP.009,PIP-L5-0004,Hydrotest Line 40-08 - Work Package,L5,Piping,,
 OIL-GGS-2026,PIP.009.01,PIP-L6-0005,Hydrotest Line 40-08 at Pipe Rack North,L6,Piping,Pipe Rack North,40,,2026-12-24,2026-12-28,line,1,PIP-L5-0004
 OIL-GGS-2026,ELE.010,ELE-L5-0001,Install Earthing Grid E-12 - Work Package,L5,Electrical,,,,2026-10-12,2026-10-30,,,
 OIL-GGS-2026,ELE.010.01,ELE-L6-0002,Install Earthing Grid E-12 at Unit 300,L6,Electrical,Unit 300,,,2026-10-12,2026-10-14,m,132,ELE-L5-0001
-OIL-GGS-2026,EQP.011,EQP-L5-0006,Grout Skid P-230 - Work Package,L5,Equipment,,,P-230,2026-11-21,2026-12-05,,,
-OIL-GGS-2026,EQP.011.01,EQP-L6-0007,Grout Skid P-230 at Compressor House,L6,Equipment,Compressor House,,P-230,2026-11-21,2026-11-23,m3,2,EQP-L5-0006
-OIL-GGS-2026,EQP.011.02,EQP-L6-0008,Grout Skid P-230 at Area 10,L6,Equipment,Area 10,,P-230,2026-11-24,2026-11-27,m3,6,EQP-L6-0007
-OIL-GGS-2026,EQP.011.03,EQP-L6-0009,Grout Skid P-230 at Tank Farm,L6,Equipment,Tank Farm,,P-230,2026-11-28,2026-11-30,m3,6,EQP-L6-0008
+OIL-GGS-2026,EQP.011,EQP-L5-0006,Grout Baseplate P-230 - Work Package,L5,Equipment,,,P-230,2026-11-21,2026-12-05,,,
+OIL-GGS-2026,EQP.011.01,EQP-L6-0007,Grout Baseplate P-230 at Compressor House,L6,Equipment,Compressor House,,P-230,2026-11-21,2026-11-23,m3,2,EQP-L5-0006
+OIL-GGS-2026,EQP.011.02,EQP-L6-0008,Grout Baseplate P-230 at Area 10,L6,Equipment,Area 10,,P-230,2026-11-24,2026-11-27,m3,6,EQP-L6-0007
+OIL-GGS-2026,EQP.011.03,EQP-L6-0009,Grout Baseplate P-230 at Tank Farm,L6,Equipment,Tank Farm,,P-230,2026-11-28,2026-11-30,m3,6,EQP-L6-0008
 OIL-GGS-2026,ELE.012,ELE-L5-0003,Install Earthing Grid E-12 - Work Package,L5,Electrical,,,,2026-10-16,2026-10-26,,,
 OIL-GGS-2026,ELE.012.01,ELE-L6-0004,Install Earthing Grid E-12 - Part 1 at Area 20,L6,Electrical,Area 20,,,2026-10-16,2026-10-20,m,129,ELE-L5-0003
 OIL-GGS-2026,ELE.012.02,ELE-L6-0005,Install Earthing Grid E-12 - Part 2 at Area 20,L6,Electrical,Area 20,,,2026-10-21,2026-10-24,m,55,ELE-L6-0004
@@ -39,8 +39,8 @@ OIL-GGS-2026,PIP.013,PIP-L5-0006,Fit-up 24in Spool Line 32-05 - Work Package,L5,
 OIL-GGS-2026,PIP.013.01,PIP-L6-0007,Fit-up 24in Spool Line 32-05 at Unit 200,L6,Piping,Unit 200,32,,2026-09-29,2026-09-30,spool,11,PIP-L5-0006
 OIL-GGS-2026,PIP.013.02,PIP-L6-0008,Fit-up 24in Spool Line 32-05 at Pipe Rack North,L6,Piping,Pipe Rack North,32,,2026-10-01,2026-10-05,spool,6,PIP-L6-0007
 OIL-GGS-2026,PIP.013.03,PIP-L6-0009,Fit-up 24in Spool Line 32-05 at Rack C,L6,Piping,Rack C,32,,2026-10-06,2026-10-10,spool,11,PIP-L6-0008
-OIL-GGS-2026,EQP.014,EQP-L5-0010,Grout Skid P-492 - Work Package,L5,Equipment,,,P-492,2026-10-12,2026-10-26,,,
-OIL-GGS-2026,EQP.014.01,EQP-L6-0011,Grout Skid P-492 at Area 10,L6,Equipment,Area 10,,P-492,2026-10-12,2026-10-15,m3,5,EQP-L5-0010
+OIL-GGS-2026,EQP.014,EQP-L5-0010,Grout Baseplate P-492 - Work Package,L5,Equipment,,,P-492,2026-10-12,2026-10-26,,,
+OIL-GGS-2026,EQP.014.01,EQP-L6-0011,Grout Baseplate P-492 at Area 10,L6,Equipment,Area 10,,P-492,2026-10-12,2026-10-15,m3,5,EQP-L5-0010
 OIL-GGS-2026,PIP.015,PIP-L5-0010,Fit-up 18in Spool Line 40-08 - Work Package,L5,Piping,,40,,2026-09-17,2026-09-23,,,
 OIL-GGS-2026,PIP.015.01,PIP-L6-0011,Fit-up 18in Spool Line 40-08 at Rack A,L6,Piping,Rack A,40,,2026-09-17,2026-09-17,spool,10,PIP-L5-0010
 OIL-GGS-2026,ELE.016,ELE-L5-0007,Install Earthing Grid E-01 - Work Package,L5,Electrical,,,,2026-12-30,2027-01-11,,,
@@ -73,9 +73,9 @@ OIL-GGS-2026,INS.024.01,INS-L6-0010,Install Transmitter V-183 at Unit 200,L6,Ins
 OIL-GGS-2026,INS.024.02,INS-L6-0011,Install Transmitter V-183 at Control Room,L6,Instrumentation,Control Room,,V-183,2027-01-08,2027-01-11,instrument,5,INS-L6-0010
 OIL-GGS-2026,PIP.025,PIP-L5-0025,Weld 24in Joints Line 30-04 - Work Package,L5,Piping,,30,,2027-01-26,2027-02-15,,,
 OIL-GGS-2026,PIP.025.01,PIP-L6-0026,Weld 24in Joints Line 30-04 at Rack B,L6,Piping,Rack B,30,,2027-01-26,2027-01-29,joint,29,PIP-L5-0025
-OIL-GGS-2026,ELE.026,ELE-L5-0015,Pull Cable Cable C-670 - Work Package,L5,Electrical,,,C-670,2026-09-19,2026-09-25,,,
-OIL-GGS-2026,ELE.026.01,ELE-L6-0016,Pull Cable Cable C-670 at Cable Trench T-4,L6,Electrical,Cable Trench T-4,,C-670,2026-09-19,2026-09-21,m,170,ELE-L5-0015
-OIL-GGS-2026,ELE.026.02,ELE-L6-0017,Pull Cable Cable C-670 at MCC Room,L6,Electrical,MCC Room,,C-670,2026-09-22,2026-09-26,m,398,ELE-L6-0016
+OIL-GGS-2026,ELE.026,ELE-L5-0015,Pull Cable C-670 - Work Package,L5,Electrical,,,C-670,2026-09-19,2026-09-25,,,
+OIL-GGS-2026,ELE.026.01,ELE-L6-0016,Pull Cable C-670 at Cable Trench T-4,L6,Electrical,Cable Trench T-4,,C-670,2026-09-19,2026-09-21,m,170,ELE-L5-0015
+OIL-GGS-2026,ELE.026.02,ELE-L6-0017,Pull Cable C-670 at MCC Room,L6,Electrical,MCC Room,,C-670,2026-09-22,2026-09-26,m,398,ELE-L6-0016
 OIL-GGS-2026,STR.027,STR-L5-0001,Install Grating Platform F-177 - Work Package,L5,Structural,,,F-177,2026-11-28,2026-12-05,,,
 OIL-GGS-2026,STR.027.01,STR-L6-0002,Install Grating Platform F-177 at Area 20,L6,Structural,Area 20,,F-177,2026-11-28,2026-11-30,m2,71,STR-L5-0001
 OIL-GGS-2026,STR.027.02,STR-L6-0003,Install Grating Platform F-177 at Unit 200,L6,Structural,Unit 200,,F-177,2026-12-01,2026-12-04,m2,80,STR-L6-0002
@@ -139,8 +139,8 @@ OIL-GGS-2026,INS.047.01,INS-L6-0026,Calibrate Instrument LT-140 at Unit 200,L6,I
 OIL-GGS-2026,STR.048,STR-L5-0013,Erect Steel Frame 32-09 - Work Package,L5,Structural,,32,,2026-12-12,2026-12-29,,,
 OIL-GGS-2026,STR.048.01,STR-L6-0014,Erect Steel Frame 32-09 at Rack B,L6,Structural,Rack B,32,,2026-12-12,2026-12-14,t,25,STR-L5-0013
 OIL-GGS-2026,STR.048.02,STR-L6-0015,Erect Steel Frame 32-09 at Compressor House,L6,Structural,Compressor House,32,,2026-12-15,2026-12-17,t,26,STR-L6-0014
-OIL-GGS-2026,ELE.049,ELE-L5-0018,Pull Cable Cable C-205 - Work Package,L5,Electrical,,,C-205,2026-12-18,2027-01-05,,,
-OIL-GGS-2026,ELE.049.01,ELE-L6-0019,Pull Cable Cable C-205 at Area 20,L6,Electrical,Area 20,,C-205,2026-12-18,2026-12-21,m,363,ELE-L5-0018
+OIL-GGS-2026,ELE.049,ELE-L5-0018,Pull Cable C-205 - Work Package,L5,Electrical,,,C-205,2026-12-18,2027-01-05,,,
+OIL-GGS-2026,ELE.049.01,ELE-L6-0019,Pull Cable C-205 at Area 20,L6,Electrical,Area 20,,C-205,2026-12-18,2026-12-21,m,363,ELE-L5-0018
 OIL-GGS-2026,EQP.050,EQP-L5-0024,Install Pump PT-260 - Work Package,L5,Equipment,,,PT-260,2026-10-24,2026-11-11,,,
 OIL-GGS-2026,EQP.050.01,EQP-L6-0025,Install Pump PT-260 at Tank Farm,L6,Equipment,Tank Farm,,PT-260,2026-10-24,2026-10-26,unit,2,EQP-L5-0024
 OIL-GGS-2026,PIP.051,PIP-L5-0041,Weld 6in Joints Line 14-02 - Work Package,L5,Piping,,14,,2026-10-08,2026-10-23,,,
@@ -169,16 +169,16 @@ OIL-GGS-2026,INS.058.01,INS-L6-0034,Run Tubing Impulse Line PT-404 at Control Ro
 OIL-GGS-2026,STR.059,STR-L5-0023,Bolt-up Steel Frame F-481 - Work Package,L5,Structural,,,F-481,2026-12-03,2026-12-18,,,
 OIL-GGS-2026,STR.059.01,STR-L6-0024,Bolt-up Steel Frame F-481 at Compressor House,L6,Structural,Compressor House,,F-481,2026-12-03,2026-12-07,joint,43,STR-L5-0023
 OIL-GGS-2026,STR.059.02,STR-L6-0025,Bolt-up Steel Frame F-481 at Rack B,L6,Structural,Rack B,,F-481,2026-12-08,2026-12-09,joint,11,STR-L6-0024
-OIL-GGS-2026,ELE.060,ELE-L5-0023,Pull Cable Cable C-175 - Work Package,L5,Electrical,,,C-175,2027-01-22,2027-02-10,,,
-OIL-GGS-2026,ELE.060.01,ELE-L6-0024,Pull Cable Cable C-175 at Area 20,L6,Electrical,Area 20,,C-175,2027-01-22,2027-01-23,m,53,ELE-L5-0023
-OIL-GGS-2026,ELE.060.02,ELE-L6-0025,Pull Cable Cable C-175 at Substation 1,L6,Electrical,Substation 1,,C-175,2027-01-25,2027-01-28,m,207,ELE-L6-0024
+OIL-GGS-2026,ELE.060,ELE-L5-0023,Pull Cable C-175 - Work Package,L5,Electrical,,,C-175,2027-01-22,2027-02-10,,,
+OIL-GGS-2026,ELE.060.01,ELE-L6-0024,Pull Cable C-175 at Area 20,L6,Electrical,Area 20,,C-175,2027-01-22,2027-01-23,m,53,ELE-L5-0023
+OIL-GGS-2026,ELE.060.02,ELE-L6-0025,Pull Cable C-175 at Substation 1,L6,Electrical,Substation 1,,C-175,2027-01-25,2027-01-28,m,207,ELE-L6-0024
 OIL-GGS-2026,STR.061,STR-L5-0026,Install Grating Platform F-137 - Work Package,L5,Structural,,,F-137,2026-09-30,2026-10-19,,,
 OIL-GGS-2026,STR.061.01,STR-L6-0027,Install Grating Platform F-137 at Unit 200,L6,Structural,Unit 200,,F-137,2026-09-30,2026-10-03,m2,48,STR-L5-0026
 OIL-GGS-2026,CIV.062,CIV-L5-0022,Excavate Foundation F-370 - Work Package,L5,Civil,,,F-370,2026-12-07,2026-12-17,,,
 OIL-GGS-2026,CIV.062.01,CIV-L6-0023,Excavate Foundation F-370 - Part 1 at Area 20,L6,Civil,Area 20,,F-370,2026-12-07,2026-12-08,m3,61,CIV-L5-0022
 OIL-GGS-2026,CIV.062.02,CIV-L6-0024,Excavate Foundation F-370 - Part 2 at Area 20,L6,Civil,Area 20,,F-370,2026-12-09,2026-12-09,m3,158,CIV-L6-0023
-OIL-GGS-2026,EQP.063,EQP-L5-0026,Grout Skid FT-200 - Work Package,L5,Equipment,,,FT-200,2026-11-25,2026-12-07,,,
-OIL-GGS-2026,EQP.063.01,EQP-L6-0027,Grout Skid FT-200 at Area 10,L6,Equipment,Area 10,,FT-200,2026-11-25,2026-11-27,m3,5,EQP-L5-0026
+OIL-GGS-2026,EQP.063,EQP-L5-0026,Grout Baseplate FT-200 - Work Package,L5,Equipment,,,FT-200,2026-11-25,2026-12-07,,,
+OIL-GGS-2026,EQP.063.01,EQP-L6-0027,Grout Baseplate FT-200 at Area 10,L6,Equipment,Area 10,,FT-200,2026-11-25,2026-11-27,m3,5,EQP-L5-0026
 OIL-GGS-2026,PIP.064,PIP-L5-0044,Erect 18in Spool Line 22-04 - Work Package,L5,Piping,,22,,2026-10-31,2026-11-13,,,
 OIL-GGS-2026,PIP.064.01,PIP-L6-0045,Erect 18in Spool Line 22-04 - Part 1 at Unit 200,L6,Piping,Unit 200,22,,2026-10-31,2026-11-02,spool,13,PIP-L5-0044
 OIL-GGS-2026,PIP.064.02,PIP-L6-0046,Erect 18in Spool Line 22-04 - Part 2 at Unit 200,L6,Piping,Unit 200,22,,2026-11-03,2026-11-03,spool,12,PIP-L6-0045
@@ -187,9 +187,9 @@ OIL-GGS-2026,INS.065.01,INS-L6-0036,Install Transmitter P-267 at Unit 300,L6,Ins
 OIL-GGS-2026,INS.065.02,INS-L6-0037,Install Transmitter P-267 at Rack B,L6,Instrumentation,Rack B,,P-267,2026-12-15,2026-12-15,instrument,6,INS-L6-0036
 OIL-GGS-2026,PIP.066,PIP-L5-0047,Erect 24in Spool Line 24-08 - Work Package,L5,Piping,,24,,2027-01-01,2027-01-14,,,
 OIL-GGS-2026,PIP.066.01,PIP-L6-0048,Erect 24in Spool Line 24-08 at Rack B,L6,Piping,Rack B,24,,2027-01-01,2027-01-01,spool,17,PIP-L5-0047
-OIL-GGS-2026,ELE.067,ELE-L5-0026,Pull Cable Cable C-673 - Work Package,L5,Electrical,,,C-673,2026-09-07,2026-09-16,,,
-OIL-GGS-2026,ELE.067.01,ELE-L6-0027,Pull Cable Cable C-673 at Substation 1,L6,Electrical,Substation 1,,C-673,2026-09-07,2026-09-09,m,200,ELE-L5-0026
-OIL-GGS-2026,ELE.067.02,ELE-L6-0028,Pull Cable Cable C-673 at MCC Room,L6,Electrical,MCC Room,,C-673,2026-09-10,2026-09-11,m,272,ELE-L6-0027
+OIL-GGS-2026,ELE.067,ELE-L5-0026,Pull Cable C-673 - Work Package,L5,Electrical,,,C-673,2026-09-07,2026-09-16,,,
+OIL-GGS-2026,ELE.067.01,ELE-L6-0027,Pull Cable C-673 at Substation 1,L6,Electrical,Substation 1,,C-673,2026-09-07,2026-09-09,m,200,ELE-L5-0026
+OIL-GGS-2026,ELE.067.02,ELE-L6-0028,Pull Cable C-673 at MCC Room,L6,Electrical,MCC Room,,C-673,2026-09-10,2026-09-11,m,272,ELE-L6-0027
 OIL-GGS-2026,STR.068,STR-L5-0028,Install Grating Platform F-466 - Work Package,L5,Structural,,,F-466,2027-01-06,2027-01-25,,,
 OIL-GGS-2026,STR.068.01,STR-L6-0029,Install Grating Platform F-466 at Compressor House,L6,Structural,Compressor House,,F-466,2027-01-06,2027-01-11,m2,29,STR-L5-0028
 OIL-GGS-2026,CIV.069,CIV-L5-0025,Backfill Foundation F-204 - Work Package,L5,Civil,,,F-204,2027-01-27,2027-02-04,,,
@@ -209,3 +209,94 @@ OIL-GGS-2026,CIV.073.01,CIV-L6-0030,Shutter Foundation F-210 at Area 20,L6,Civil
 OIL-GGS-2026,CIV.073.02,CIV-L6-0031,Shutter Foundation F-210 at Area 10,L6,Civil,Area 10,,F-210,2026-09-12,2026-09-12,m2,30,CIV-L6-0030
 OIL-GGS-2026,EQP.074,EQP-L5-0028,Install Pump TK-238 - Work Package,L5,Equipment,,,TK-238,2026-10-27,2026-11-16,,,
 OIL-GGS-2026,EQP.074.01,EQP-L6-0029,Install Pump TK-238 at Tank Farm,L6,Equipment,Tank Farm,,TK-238,2026-10-27,2026-10-28,unit,2,EQP-L5-0028
+OIL-GGS-2026,PIP.075,PIP-L5-0049,Weld 6in Joints Line 14-07 - Work Package,L5,Piping,,14,,2026-11-09,2026-11-27,,,
+OIL-GGS-2026,PIP.075.01,PIP-L6-0050,Weld 6in Joints Line 14-07 at Unit 200,L6,Piping,Unit 200,14,,2026-11-09,2026-11-13,joint,11,PIP-L5-0049
+OIL-GGS-2026,PIP.075.02,PIP-L6-0051,Weld 6in Joints Line 14-07 at Rack A,L6,Piping,Rack A,14,,2026-11-14,2026-11-18,joint,24,PIP-L6-0050
+OIL-GGS-2026,PIP.075.03,PIP-L6-0052,Weld 6in Joints Line 14-07 at Rack C,L6,Piping,Rack C,14,,2026-11-19,2026-11-21,joint,14,PIP-L6-0051
+OIL-GGS-2026,EQP.076,EQP-L5-0030,Install Pump LT-247 - Work Package,L5,Equipment,,,LT-247,2027-01-04,2027-01-13,,,
+OIL-GGS-2026,EQP.076.01,EQP-L6-0031,Install Pump LT-247 at Unit 100,L6,Equipment,Unit 100,,LT-247,2027-01-04,2027-01-08,unit,2,EQP-L5-0030
+OIL-GGS-2026,PIP.077,PIP-L5-0053,Fit-up 24in Spool Line 30-07 - Work Package,L5,Piping,,30,,2026-09-16,2026-09-23,,,
+OIL-GGS-2026,PIP.077.01,PIP-L6-0054,Fit-up 24in Spool Line 30-07 at Rack C,L6,Piping,Rack C,30,,2026-09-16,2026-09-18,spool,7,PIP-L5-0053
+OIL-GGS-2026,PIP.077.02,PIP-L6-0055,Fit-up 24in Spool Line 30-07 at Rack B,L6,Piping,Rack B,30,,2026-09-19,2026-09-21,spool,4,PIP-L6-0054
+OIL-GGS-2026,PIP.077.03,PIP-L6-0056,Fit-up 24in Spool Line 30-07 at Unit 200,L6,Piping,Unit 200,30,,2026-09-22,2026-09-26,spool,5,PIP-L6-0055
+OIL-GGS-2026,EQP.078,EQP-L5-0032,Erect Vessel 14-01 - Work Package,L5,Equipment,,14,,2026-10-08,2026-10-21,,,
+OIL-GGS-2026,EQP.078.01,EQP-L6-0033,Erect Vessel 14-01 at Unit 200,L6,Equipment,Unit 200,14,,2026-10-08,2026-10-10,unit,1,EQP-L5-0032
+OIL-GGS-2026,EQP.078.02,EQP-L6-0034,Erect Vessel 14-01 at Unit 100,L6,Equipment,Unit 100,14,,2026-10-12,2026-10-16,unit,1,EQP-L6-0033
+OIL-GGS-2026,EQP.078.03,EQP-L6-0035,Erect Vessel 14-01 at Compressor House,L6,Equipment,Compressor House,14,,2026-10-17,2026-10-21,unit,1,EQP-L6-0034
+OIL-GGS-2026,ELE.079,ELE-L5-0029,Pull Cable C-816 - Work Package,L5,Electrical,,,C-816,2026-11-19,2026-11-26,,,
+OIL-GGS-2026,ELE.079.01,ELE-L6-0030,Pull Cable C-816 - Part 1 at MCC Room,L6,Electrical,MCC Room,,C-816,2026-11-19,2026-11-20,m,230,ELE-L5-0029
+OIL-GGS-2026,ELE.079.02,ELE-L6-0031,Pull Cable C-816 - Part 2 at MCC Room,L6,Electrical,MCC Room,,C-816,2026-11-21,2026-11-23,m,263,ELE-L6-0030
+OIL-GGS-2026,STR.080,STR-L5-0030,Bolt-up Steel Frame F-262 - Work Package,L5,Structural,,,F-262,2026-12-18,2026-12-28,,,
+OIL-GGS-2026,STR.080.01,STR-L6-0031,Bolt-up Steel Frame F-262 at Rack A,L6,Structural,Rack A,,F-262,2026-12-18,2026-12-19,joint,21,STR-L5-0030
+OIL-GGS-2026,CIV.081,CIV-L5-0032,Excavate Foundation F-252 - Work Package,L5,Civil,,,F-252,2026-11-13,2026-11-24,,,
+OIL-GGS-2026,CIV.081.01,CIV-L6-0033,Excavate Foundation F-252 at Unit 100,L6,Civil,Unit 100,,F-252,2026-11-13,2026-11-17,m3,133,CIV-L5-0032
+OIL-GGS-2026,INS.082,INS-L5-0046,Install Transmitter FT-180 - Work Package,L5,Instrumentation,,,FT-180,2026-09-07,2026-09-18,,,
+OIL-GGS-2026,INS.082.01,INS-L6-0047,Install Transmitter FT-180 at Unit 300,L6,Instrumentation,Unit 300,,FT-180,2026-09-07,2026-09-11,instrument,4,INS-L5-0046
+OIL-GGS-2026,INS.082.02,INS-L6-0048,Install Transmitter FT-180 at Unit 200,L6,Instrumentation,Unit 200,,FT-180,2026-09-12,2026-09-15,instrument,8,INS-L6-0047
+OIL-GGS-2026,PIP.083,PIP-L5-0057,Weld 8in Joints Line 30-08 - Work Package,L5,Piping,,30,,2026-09-14,2026-09-30,,,
+OIL-GGS-2026,PIP.083.01,PIP-L6-0058,Weld 8in Joints Line 30-08 - Part 1 at Rack A,L6,Piping,Rack A,30,,2026-09-14,2026-09-14,joint,23,PIP-L5-0057
+OIL-GGS-2026,PIP.083.02,PIP-L6-0059,Weld 8in Joints Line 30-08 - Part 2 at Rack A,L6,Piping,Rack A,30,,2026-09-15,2026-09-15,joint,25,PIP-L6-0058
+OIL-GGS-2026,PIP.083.03,PIP-L6-0060,Weld 8in Joints Line 30-08 - Part 3 at Rack A,L6,Piping,Rack A,30,,2026-09-16,2026-09-17,joint,20,PIP-L6-0059
+OIL-GGS-2026,EQP.084,EQP-L5-0036,Align Pump PT-400 - Work Package,L5,Equipment,,,PT-400,2026-11-18,2026-11-30,,,
+OIL-GGS-2026,EQP.084.01,EQP-L6-0037,Align Pump PT-400 at Unit 200,L6,Equipment,Unit 200,,PT-400,2026-11-18,2026-11-21,unit,1,EQP-L5-0036
+OIL-GGS-2026,EQP.084.02,EQP-L6-0038,Align Pump PT-400 at Unit 100,L6,Equipment,Unit 100,,PT-400,2026-11-23,2026-11-24,unit,2,EQP-L6-0037
+OIL-GGS-2026,CIV.085,CIV-L5-0034,Cast Concrete Foundation F-380 - Work Package,L5,Civil,,,F-380,2026-10-28,2026-11-12,,,
+OIL-GGS-2026,CIV.085.01,CIV-L6-0035,Cast Concrete Foundation F-380 at Area 10,L6,Civil,Area 10,,F-380,2026-10-28,2026-10-28,m3,38,CIV-L5-0034
+OIL-GGS-2026,CIV.085.02,CIV-L6-0036,Cast Concrete Foundation F-380 at Substation Pad,L6,Civil,Substation Pad,,F-380,2026-10-29,2026-11-02,m3,54,CIV-L6-0035
+OIL-GGS-2026,EQP.086,EQP-L5-0039,Align Pump PT-246 - Work Package,L5,Equipment,,,PT-246,2026-10-05,2026-10-16,,,
+OIL-GGS-2026,EQP.086.01,EQP-L6-0040,Align Pump PT-246 at Compressor House,L6,Equipment,Compressor House,,PT-246,2026-10-05,2026-10-07,unit,1,EQP-L5-0039
+OIL-GGS-2026,EQP.086.02,EQP-L6-0041,Align Pump PT-246 at Unit 100,L6,Equipment,Unit 100,,PT-246,2026-10-08,2026-10-10,unit,1,EQP-L6-0040
+OIL-GGS-2026,CIV.087,CIV-L5-0037,Cast Concrete Foundation F-120 - Work Package,L5,Civil,,,F-120,2026-09-24,2026-10-12,,,
+OIL-GGS-2026,CIV.087.01,CIV-L6-0038,Cast Concrete Foundation F-120 at Area 20,L6,Civil,Area 20,,F-120,2026-09-24,2026-09-25,m3,14,CIV-L5-0037
+OIL-GGS-2026,INS.088,INS-L5-0049,Loop Check Loop TK-206 - Work Package,L5,Instrumentation,,,TK-206,2027-01-21,2027-01-29,,,
+OIL-GGS-2026,INS.088.01,INS-L6-0050,Loop Check Loop TK-206 at Unit 300,L6,Instrumentation,Unit 300,,TK-206,2027-01-21,2027-01-25,loop,6,INS-L5-0049
+OIL-GGS-2026,STR.089,STR-L5-0032,Install Grating Platform F-387 - Work Package,L5,Structural,,,F-387,2026-11-20,2026-11-28,,,
+OIL-GGS-2026,STR.089.01,STR-L6-0033,Install Grating Platform F-387 at Area 20,L6,Structural,Area 20,,F-387,2026-11-20,2026-11-21,m2,42,STR-L5-0032
+OIL-GGS-2026,STR.089.02,STR-L6-0034,Install Grating Platform F-387 at Rack B,L6,Structural,Rack B,,F-387,2026-11-23,2026-11-26,m2,50,STR-L6-0033
+OIL-GGS-2026,ELE.090,ELE-L5-0032,Install Earthing Grid E-08 - Work Package,L5,Electrical,,,,2026-10-30,2026-11-17,,,
+OIL-GGS-2026,ELE.090.01,ELE-L6-0033,Install Earthing Grid E-08 at Substation 1,L6,Electrical,Substation 1,,,2026-10-30,2026-10-30,m,97,ELE-L5-0032
+OIL-GGS-2026,ELE.090.02,ELE-L6-0034,Install Earthing Grid E-08 at Unit 300,L6,Electrical,Unit 300,,,2026-10-31,2026-11-02,m,147,ELE-L6-0033
+OIL-GGS-2026,STR.091,STR-L5-0035,Bolt-up Steel Frame F-161 - Work Package,L5,Structural,,,F-161,2026-10-21,2026-11-09,,,
+OIL-GGS-2026,STR.091.01,STR-L6-0036,Bolt-up Steel Frame F-161 at Compressor House,L6,Structural,Compressor House,,F-161,2026-10-21,2026-10-23,joint,19,STR-L5-0035
+OIL-GGS-2026,STR.091.02,STR-L6-0037,Bolt-up Steel Frame F-161 at Unit 200,L6,Structural,Unit 200,,F-161,2026-10-24,2026-10-26,joint,48,STR-L6-0036
+OIL-GGS-2026,ELE.092,ELE-L5-0035,Install Earthing Grid E-08 - Work Package,L5,Electrical,,,,2026-09-10,2026-09-18,,,
+OIL-GGS-2026,ELE.092.01,ELE-L6-0036,Install Earthing Grid E-08 at MCC Room,L6,Electrical,MCC Room,,,2026-09-10,2026-09-14,m,58,ELE-L5-0035
+OIL-GGS-2026,ELE.092.02,ELE-L6-0037,Install Earthing Grid E-08 at Area 20,L6,Electrical,Area 20,,,2026-09-15,2026-09-19,m,135,ELE-L6-0036
+OIL-GGS-2026,STR.093,STR-L5-0038,Erect Steel Frame 30-09 - Work Package,L5,Structural,,30,,2026-11-16,2026-12-03,,,
+OIL-GGS-2026,STR.093.01,STR-L6-0039,Erect Steel Frame 30-09 at Rack B,L6,Structural,Rack B,30,,2026-11-16,2026-11-19,t,30,STR-L5-0038
+OIL-GGS-2026,CIV.094,CIV-L5-0039,Shutter Foundation F-488 - Work Package,L5,Civil,,,F-488,2026-11-19,2026-12-05,,,
+OIL-GGS-2026,CIV.094.01,CIV-L6-0040,Shutter Foundation F-488 at Area 10,L6,Civil,Area 10,,F-488,2026-11-19,2026-11-23,m2,46,CIV-L5-0039
+OIL-GGS-2026,CIV.094.02,CIV-L6-0041,Shutter Foundation F-488 at Substation Pad,L6,Civil,Substation Pad,,F-488,2026-11-24,2026-11-24,m2,54,CIV-L6-0040
+OIL-GGS-2026,EQP.095,EQP-L5-0042,Align Pump LT-455 - Work Package,L5,Equipment,,,LT-455,2026-11-14,2026-11-23,,,
+OIL-GGS-2026,EQP.095.01,EQP-L6-0043,Align Pump LT-455 at Area 10,L6,Equipment,Area 10,,LT-455,2026-11-14,2026-11-14,unit,2,EQP-L5-0042
+OIL-GGS-2026,EQP.095.02,EQP-L6-0044,Align Pump LT-455 at Compressor House,L6,Equipment,Compressor House,,LT-455,2026-11-16,2026-11-18,unit,2,EQP-L6-0043
+OIL-GGS-2026,CIV.096,CIV-L5-0042,Backfill Foundation F-353 - Work Package,L5,Civil,,,F-353,2027-01-04,2027-01-21,,,
+OIL-GGS-2026,CIV.096.01,CIV-L6-0043,Backfill Foundation F-353 at Area 10,L6,Civil,Area 10,,F-353,2027-01-04,2027-01-05,m3,94,CIV-L5-0042
+OIL-GGS-2026,CIV.096.02,CIV-L6-0044,Backfill Foundation F-353 at Substation Pad,L6,Civil,Substation Pad,,F-353,2027-01-06,2027-01-08,m3,66,CIV-L6-0043
+OIL-GGS-2026,EQP.097,EQP-L5-0045,Install Pump V-390 - Work Package,L5,Equipment,,,V-390,2026-10-17,2026-10-26,,,
+OIL-GGS-2026,EQP.097.01,EQP-L6-0046,Install Pump V-390 at Unit 100,L6,Equipment,Unit 100,,V-390,2026-10-17,2026-10-17,unit,2,EQP-L5-0045
+OIL-GGS-2026,PIP.098,PIP-L5-0061,Weld 24in Joints Line 14-07 - Work Package,L5,Piping,,14,,2027-01-29,2027-02-17,,,
+OIL-GGS-2026,PIP.098.01,PIP-L6-0062,Weld 24in Joints Line 14-07 at Rack B,L6,Piping,Rack B,14,,2027-01-29,2027-02-02,joint,14,PIP-L5-0061
+OIL-GGS-2026,PIP.098.02,PIP-L6-0063,Weld 24in Joints Line 14-07 at Unit 200,L6,Piping,Unit 200,14,,2027-02-03,2027-02-08,joint,17,PIP-L6-0062
+OIL-GGS-2026,PIP.098.03,PIP-L6-0064,Weld 24in Joints Line 14-07 at Rack C,L6,Piping,Rack C,14,,2027-02-09,2027-02-13,joint,36,PIP-L6-0063
+OIL-GGS-2026,EQP.099,EQP-L5-0047,Align Pump LT-336 - Work Package,L5,Equipment,,,LT-336,2026-09-01,2026-09-15,,,
+OIL-GGS-2026,EQP.099.01,EQP-L6-0048,Align Pump LT-336 - Part 1 at Compressor House,L6,Equipment,Compressor House,,LT-336,2026-09-01,2026-09-02,unit,2,EQP-L5-0047
+OIL-GGS-2026,EQP.099.02,EQP-L6-0049,Align Pump LT-336 - Part 2 at Compressor House,L6,Equipment,Compressor House,,LT-336,2026-09-03,2026-09-03,unit,1,EQP-L6-0048
+OIL-GGS-2026,CIV.100,CIV-L5-0045,Excavate Foundation F-480 - Work Package,L5,Civil,,,F-480,2026-09-30,2026-10-10,,,
+OIL-GGS-2026,CIV.100.01,CIV-L6-0046,Excavate Foundation F-480 at Substation Pad,L6,Civil,Substation Pad,,F-480,2026-09-30,2026-09-30,m3,73,CIV-L5-0045
+OIL-GGS-2026,INS.101,INS-L5-0051,Loop Check Loop V-499 - Work Package,L5,Instrumentation,,,V-499,2026-09-24,2026-10-09,,,
+OIL-GGS-2026,INS.101.01,INS-L6-0052,Loop Check Loop V-499 at Unit 200,L6,Instrumentation,Unit 200,,V-499,2026-09-24,2026-09-26,loop,6,INS-L5-0051
+OIL-GGS-2026,STR.102,STR-L5-0040,Bolt-up Steel Frame F-325 - Work Package,L5,Structural,,,F-325,2026-10-31,2026-11-12,,,
+OIL-GGS-2026,STR.102.01,STR-L6-0041,Bolt-up Steel Frame F-325 at Rack A,L6,Structural,Rack A,,F-325,2026-10-31,2026-11-03,joint,18,STR-L5-0040
+OIL-GGS-2026,STR.102.02,STR-L6-0042,Bolt-up Steel Frame F-325 at Unit 200,L6,Structural,Unit 200,,F-325,2026-11-04,2026-11-04,joint,67,STR-L6-0041
+OIL-GGS-2026,STR.102.03,STR-L6-0043,Bolt-up Steel Frame F-325 at Compressor House,L6,Structural,Compressor House,,F-325,2026-11-05,2026-11-05,joint,49,STR-L6-0042
+OIL-GGS-2026,INS.103,INS-L5-0053,Run Tubing Impulse Line FT-395 - Work Package,L5,Instrumentation,,,FT-395,2026-11-07,2026-11-25,,,
+OIL-GGS-2026,INS.103.01,INS-L6-0054,Run Tubing Impulse Line FT-395 - Part 1 at Unit 200,L6,Instrumentation,Unit 200,,FT-395,2026-11-07,2026-11-09,m,43,INS-L5-0053
+OIL-GGS-2026,INS.103.02,INS-L6-0055,Run Tubing Impulse Line FT-395 - Part 2 at Unit 200,L6,Instrumentation,Unit 200,,FT-395,2026-11-10,2026-11-14,m,41,INS-L6-0054
+OIL-GGS-2026,PIP.104,PIP-L5-0065,Paint 8in Line 14-08 - Work Package,L5,Piping,,14,,2026-10-12,2026-10-21,,,
+OIL-GGS-2026,PIP.104.01,PIP-L6-0066,Paint 8in Line 14-08 - Part 1 at Rack A,L6,Piping,Rack A,14,,2026-10-12,2026-10-16,m,85,PIP-L5-0065
+OIL-GGS-2026,PIP.104.02,PIP-L6-0067,Paint 8in Line 14-08 - Part 2 at Rack A,L6,Piping,Rack A,14,,2026-10-17,2026-10-19,m,84,PIP-L6-0066
+OIL-GGS-2026,INS.105,INS-L5-0056,Run Tubing Impulse Line P-466 - Work Package,L5,Instrumentation,,,P-466,2026-11-07,2026-11-19,,,
+OIL-GGS-2026,INS.105.01,INS-L6-0057,Run Tubing Impulse Line P-466 at Unit 200,L6,Instrumentation,Unit 200,,P-466,2026-11-07,2026-11-07,m,45,INS-L5-0056
+OIL-GGS-2026,STR.106,STR-L5-0044,Bolt-up Steel Frame F-462 - Work Package,L5,Structural,,,F-462,2026-11-30,2026-12-12,,,
+OIL-GGS-2026,STR.106.01,STR-L6-0045,Bolt-up Steel Frame F-462 at Compressor House,L6,Structural,Compressor House,,F-462,2026-11-30,2026-12-03,joint,39,STR-L5-0044
