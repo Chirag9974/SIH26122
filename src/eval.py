@@ -107,10 +107,12 @@ def run(split: str | None, n_errors: int, paired: Path | None = None,
     by_kind: dict[str, Counter] = defaultdict(Counter)
     errors: list[dict] = []
 
-    # Matching metrics
-    match_stats = Counter()
-    recall_at_k = {1: 0, 3: 0, 5: 0, 10: 0}
-    total_matchable = 0
+    # Candidate-pool quality (NOT matcher accuracy -- this repo has no matcher).
+    # The pool order is generator-chosen, so position-based Recall@K would
+    # mistake the generator's shuffle for a ranking prediction. We only
+    # measure retrieval: is the gold activity in the pool at all?
+    pool_stats = Counter()
+    decisions = Counter()
 
     for rid in ids:
         rep, g = reports[rid], gold[rid]
@@ -128,36 +130,28 @@ def run(split: str | None, n_errors: int, paired: Path | None = None,
                 ev["tp"] += 1
                 by_kind[kind]["tp"] += 1
 
-                # Matching metrics
+                # Candidate-pool quality
                 event_id = ge["event_id"]
                 if event_id in matches_data:
                     match = matches_data[event_id]
                     gold_match_id = match.get("schedule_activity_id")
                     candidates = match.get("candidate_pool", [])
+                    decision = match.get("decision",
+                                         "auto_match" if gold_match_id else "no_match")
+                    decisions[decision] += 1
 
-                    if gold_match_id is None:
-                        # No-match case
-                        match_stats["no_match_total"] += 1
-                        # Ideally, matcher should return None
-                        # For now, we just track these
+                    if decision == "no_match":
+                        pool_stats["no_match_total"] += 1
+                        if not candidates:
+                            pool_stats["no_match_pool_empty"] += 1
                     else:
-                        # Matchable case
-                        total_matchable += 1
+                        # matchable (auto_match) or reviewable (human_review)
+                        pool_stats["matchable_total"] += 1
+                        pool_stats["pool_size_sum"] += len(candidates)
                         if gold_match_id in candidates:
-                            # Check recall@K
-                            pos = candidates.index(gold_match_id) + 1
-                            for k in [1, 3, 5, 10]:
-                                if pos <= k:
-                                    recall_at_k[k] += 1
-
-                        # Count by difficulty
-                        n_cand = len(candidates)
-                        if n_cand == 1:
-                            match_stats["easy"] += 1
-                        elif n_cand <= 3:
-                            match_stats["medium"] += 1
-                        else:
-                            match_stats["hard"] += 1
+                            pool_stats["pool_contains_gold"] += 1
+                        if len(candidates) > 1:
+                            pool_stats["with_hard_negatives"] += 1
 
                 for name, get in FIELDS:
                     gv, pv = get(ge), get(pe)
@@ -207,19 +201,22 @@ def run(split: str | None, n_errors: int, paired: Path | None = None,
         "evidence_coverage": round(evid["covered"] / max(1, sum(evid.values())), 4),
         "by_case_kind": {k: {"tp": v["tp"], "fp": v["fp"], "fn": v["fn"]}
                          for k, v in sorted(by_kind.items())},
-        "matching": {
-            "candidate_recall_at_1": round(recall_at_k[1] / max(1, total_matchable), 4),
-            "candidate_recall_at_3": round(recall_at_k[3] / max(1, total_matchable), 4),
-            "candidate_recall_at_5": round(recall_at_k[5] / max(1, total_matchable), 4),
-            "candidate_recall_at_10": round(recall_at_k[10] / max(1, total_matchable), 4),
-            "total_matchable": total_matchable,
-            "no_match_cases": match_stats["no_match_total"],
-            "by_difficulty": {
-                "easy": match_stats["easy"],
-                "medium": match_stats["medium"],
-                "hard": match_stats["hard"],
-            },
+        # Candidate-pool quality only. This repo ships no matcher, so there
+        # is no ranking/no-match-detection accuracy to report -- those numbers
+        # must come from an actual matcher evaluated against these gold
+        # decisions (auto_match / human_review / no_match).
+        "candidate_pool_quality": {
+            "matchable_events": pool_stats["matchable_total"],
+            "pool_contains_gold": pool_stats["pool_contains_gold"],
+            "pool_recall": round(pool_stats["pool_contains_gold"]
+                                 / max(1, pool_stats["matchable_total"]), 4),
+            "avg_pool_size": round(pool_stats["pool_size_sum"]
+                                   / max(1, pool_stats["matchable_total"]), 2),
+            "with_hard_negatives": pool_stats["with_hard_negatives"],
+            "no_match_events": pool_stats["no_match_total"],
+            "no_match_pool_empty": pool_stats["no_match_pool_empty"],
         },
+        "gold_decisions": dict(sorted(decisions.items())),
     }
     return metrics | {"_errors": errors}
 
@@ -256,15 +253,17 @@ def main() -> None:
           f"certainty {d['certainty']:.3f}")
     print(f"evidence cover   {m['evidence_coverage']:.3f}")
     print()
-    print("=== Matching Metrics ===")
-    mt = m["matching"]
-    print(f"Candidate Recall@1:  {mt['candidate_recall_at_1']:.3f}")
-    print(f"Candidate Recall@3:  {mt['candidate_recall_at_3']:.3f}")
-    print(f"Candidate Recall@5:  {mt['candidate_recall_at_5']:.3f}")
-    print(f"Candidate Recall@10: {mt['candidate_recall_at_10']:.3f}")
-    print(f"Total matchable: {mt['total_matchable']}, No-match cases: {mt['no_match_cases']}")
-    print(f"By difficulty: easy={mt['by_difficulty']['easy']}, "
-          f"medium={mt['by_difficulty']['medium']}, hard={mt['by_difficulty']['hard']}")
+    print("=== Candidate Pool Quality (no matcher shipped; retrieval only) ===")
+    cp = m["candidate_pool_quality"]
+    print(f"pool recall (gold activity in pool): {cp['pool_recall']:.3f} "
+          f"({cp['pool_contains_gold']}/{cp['matchable_events']} matchable)")
+    print(f"avg pool size: {cp['avg_pool_size']}, "
+          f"with hard negatives: {cp['with_hard_negatives']}")
+    print(f"no-match events: {cp['no_match_events']} "
+          f"(pool empty for {cp['no_match_pool_empty']})")
+    if m["gold_decisions"]:
+        print("gold decisions:   " + "  ".join(
+            f"{k}:{v}" for k, v in m["gold_decisions"].items()))
     print()
     print("by case kind     " + "  ".join(
         f"{k}:{v['tp']}/{v['tp'] + v['fn']}" for k, v in m["by_case_kind"].items()))

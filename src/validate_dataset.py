@@ -13,9 +13,13 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from vocab import ACTION_ALIASES  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEDULE = ROOT / "data" / "schedule" / "schedule_activities.csv"
@@ -23,6 +27,11 @@ REPORTS = ROOT / "data" / "raw_reports" / "reports.jsonl"
 GOLD = ROOT / "data" / "labels" / "gold_extractions.jsonl"
 MATCHES = ROOT / "data" / "labels" / "gold_matches.jsonl"
 SPLITS = ROOT / "data" / "evaluation" / "splits.json"
+
+_PLACEHOLDER = re.compile(r"\{[a-z_]+\}")
+# "loop checking loop checking", "of of", "installation installation"
+# Alphabetic only: numeric repeats are legitimate ("Area 10 10 to 2" = loc + time).
+_DUP_PHRASE = re.compile(r"\b([A-Za-z]+(?:\s+[A-Za-z]+)?)\s+\1\b", re.IGNORECASE)
 
 
 def _jsonl(path: Path) -> list[dict]:
@@ -73,22 +82,72 @@ def validate() -> dict:
     if match_event_ids != gold_event_ids:
         errors.append(f"Match/event ID mismatch: {len(match_event_ids - gold_event_ids)} extra, {len(gold_event_ids - match_event_ids)} missing")
 
+    event_by_id = {ev["event_id"]: ev for g in golds for ev in g["events"]}
+
+    # Generator artifacts: unresolved placeholders and duplicated phrases.
+    # Checked on report text, gold evidence, gold descriptions and schedule names.
+    texts = [(f"report {r['report_id']}", r["raw_text"]) for r in reports]
+    texts += [(f"schedule {r['activity_id']}", r["activity_name"]) for r in schedule]
+    for g in golds:
+        for ev in g["events"]:
+            texts.append((f"evidence {ev['event_id']}", ev["evidence"]["source_text"]))
+            texts.append((f"description {ev['event_id']}", ev["activity"]["description"]))
+    for label, text in texts:
+        if _PLACEHOLDER.search(text):
+            errors.append(f"Unresolved placeholder in {label}: {text[:80]!r}")
+        if _DUP_PHRASE.search(text):
+            errors.append(f"Duplicated phrase in {label}: {text[:80]!r}")
+
     # 4. Check candidate pools
     all_schedule_ids = set(activity_ids)
     for m in matches:
         if m["schedule_activity_id"] and m["schedule_activity_id"] not in all_schedule_ids:
             errors.append(f"Match {m['event_id']} references invalid schedule ID {m['schedule_activity_id']}")
 
-        for cid in m.get("candidate_pool", []):
+        pool = m.get("candidate_pool", [])
+        if len(pool) != len(set(pool)):
+            errors.append(f"Match {m['event_id']} has duplicate candidate IDs")
+        for cid in pool:
             if cid not in all_schedule_ids:
                 errors.append(f"Match {m['event_id']} has invalid candidate {cid}")
 
-        # Check no-match cases
-        if m["decision"] == "no_match" and m["schedule_activity_id"] is not None:
-            errors.append(f"Match {m['event_id']}: decision=no_match but has schedule_activity_id")
+        # no_match must be verified-unmatchable, not just asserted
+        if m["decision"] == "no_match":
+            if m["schedule_activity_id"] is not None:
+                errors.append(f"Match {m['event_id']}: decision=no_match but has schedule_activity_id")
+            if pool:
+                warnings.append(f"Match {m['event_id']}: no_match but has non-empty candidate pool")
+            ev = event_by_id.get(m["event_id"])
+            if ev is not None:
+                disc = ev["context"].get("discipline") or ""
+                act = ev["activity"].get("action") or ""
+                loc = ev["context"].get("location") or ""
+                first = act.split()[0].lower() if act else ""
+                action_words = {w for a in ACTION_ALIASES.get(first, [first])
+                                for w in a.replace("-", " ").split()}
+                plausible = [
+                    r for r in schedule
+                    if r["wbs_level"] == "L6"
+                    and r["discipline"] == disc
+                    and r["location"] == loc
+                    and action_words & {w.lower() for w in r["activity_name"].split()}
+                ]
+                if plausible:
+                    errors.append(
+                        f"Match {m['event_id']}: no_match but schedule has plausible "
+                        f"match {plausible[0]['activity_id']} ({disc}/{loc}/{act})")
+        else:
+            # matchable cases: gold activity must be retrievable from the pool
+            gold_id = m["schedule_activity_id"]
+            if gold_id is None:
+                errors.append(f"Match {m['event_id']}: matchable but schedule_activity_id is null")
+            elif pool and gold_id not in pool:
+                errors.append(f"Match {m['event_id']}: gold activity {gold_id} missing from candidate pool")
 
-        if m["decision"] == "no_match" and m.get("candidate_pool"):
-            warnings.append(f"Match {m['event_id']}: no_match but has non-empty candidate pool")
+        # ambiguous cases must require review, never auto-match
+        if (m.get("reason") == "ambiguous_multiple_candidates"
+                and m.get("decision") == "auto_match"):
+            errors.append(f"Match {m['event_id']}: ambiguous_multiple_candidates marked auto_match")
 
     # 5. Check train/test leakage
     if splits:

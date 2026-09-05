@@ -18,10 +18,10 @@
     "fp": 0,
     "fn": 0
   },
-  "field_accuracy_overall": 0.9636,
+  "field_accuracy_overall": 0.9582,
   "field_accuracy": {
     "activity.action": 1.0,
-    "context.discipline": 1.0,
+    "context.discipline": 0.9455,
     "context.line_number": 1.0,
     "context.location": 1.0,
     "execution.assertion": 1.0,
@@ -54,17 +54,17 @@
       "fn": 0
     }
   },
-  "matching": {
-    "candidate_recall_at_1": 0.075,
-    "candidate_recall_at_3": 0.25,
-    "candidate_recall_at_5": 0.4125,
-    "candidate_recall_at_10": 1.0,
-    "total_matchable": 80,
-    "no_match_cases": 30,
-    "by_difficulty": {
-      "easy": 0,
-      "medium": 0,
-      "hard": 80
-    }
+  "candidate_pool_quality": {
+    "matchable_events": 80,
+    "pool_contains_gold": 80,
+    "pool_recall": 1.0,
+    "avg_pool_size": 9.0,
+    "with_hard_negatives": 80,
+    "no_match_events": 30,
+    "no_match_pool_empty": 30
+  },
+  "gold_decisions": {
+    "auto_match": 80,
+    "no_match": 30
   }
 }

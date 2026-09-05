@@ -184,6 +184,23 @@ location,Cable Trench T-4,t-4 trench
 location,Wellhead Pad 2,wellhead pad 2
 location,Wellhead Pad 2,wh pad 2
 location,Wellhead Pad 2,whp-2
+location,Unit 400,unit 400
+location,Unit 400,u-400
+location,Unit 400,u400
+location,Unit 400,unit-400
+location,Pipe Rack South,pipe rack south
+location,Pipe Rack South,prs
+location,Pipe Rack South,pipe rack s
+location,Substation 2,substation 2
+location,Substation 2,ss-2
+location,Substation 2,ss 2
+location,Substation 2,substn 2
+location,Area 30,area 30
+location,Area 30,a-30
+location,Area 30,ar 30
+location,Area 30,area-30
+location,Flare Area,flare area
+location,Flare Area,flare
 status,completed,completed
 status,completed,complete
 status,completed,done

@@ -64,17 +64,14 @@
       "fn": 0
     }
   },
-  "matching": {
-    "candidate_recall_at_1": 0.0,
-    "candidate_recall_at_3": 0.0,
-    "candidate_recall_at_5": 0.0,
-    "candidate_recall_at_10": 0.0,
-    "total_matchable": 0,
-    "no_match_cases": 0,
-    "by_difficulty": {
-      "easy": 0,
-      "medium": 0,
-      "hard": 0
-    }
-  }
+  "candidate_pool_quality": {
+    "matchable_events": 0,
+    "pool_contains_gold": 0,
+    "pool_recall": 0.0,
+    "avg_pool_size": 0.0,
+    "with_hard_negatives": 0,
+    "no_match_events": 0,
+    "no_match_pool_empty": 0
+  },
+  "gold_decisions": {}
 }

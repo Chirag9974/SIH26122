@@ -67,6 +67,12 @@ location,MCC Room,mcc
 location,Control Room,cr
 location,Pipe Rack North,prn
 location,Wellhead Pad 2,whp-2
+location,Unit 400,u-400
+location,Unit 400,u400
+location,Pipe Rack South,prs
+location,Substation 2,ss-2
+location,Area 30,a-30
+location,Flare Area,flare
 status,completed,done
 status,completed,compl
 status,completed,cmpltd

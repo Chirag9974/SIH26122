@@ -19,7 +19,8 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from vocab import DISCIPLINES, LOCATION_ALIASES, ACTION_ALIASES
+from vocab import (DISCIPLINES, LOCATION_ALIASES, ACTION_ALIASES, SIZES,
+                   UNSCHEDULED_LOCATIONS)
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEDULE = ROOT / "data" / "schedule" / "schedule_activities.csv"
@@ -60,10 +61,27 @@ def _field_noun(work: dict, act: dict) -> str:
     return work["field_noun"].format(size=size).strip()
 
 
-def _work_phrase(work: dict, act: dict) -> str:
-    noun = _field_noun(work, act)
+def _phrase_for(work: dict, noun: str) -> str:
+    """Natural description of a work item, without duplicating the action."""
     head = work["action"].split()[0]
     return noun if head in noun.lower() else f"{work['action']} of {noun}"
+
+
+def _work_phrase(work: dict, act: dict) -> str:
+    return _phrase_for(work, _field_noun(work, act))
+
+
+def _join_action(noun: str, alias: str) -> str:
+    """Append an action alias to a field noun unless it duplicates it."""
+    n, a = noun.lower(), alias.lower()
+    squash = lambda s: s.replace("-", "").replace(" ", "")
+    if squash(a) in squash(n):
+        return noun
+    # word overlap in either direction: tube/tubing, pour/poured, fit/fit-up
+    if any(len(nw) > 2 and (w in nw or nw in w)
+           for w in a.split() for nw in n.split()):
+        return noun
+    return f"{noun} {alias}"
 
 
 def _loc_alias(rng: random.Random, loc: str) -> str:
@@ -168,7 +186,7 @@ def _find_candidates(act: dict, l6: list[dict], rng: random.Random) -> list[str]
 def _base_plan(rng: random.Random, act: dict, rdate: date, work: dict, l6: list[dict]) -> EventPlan:
     return EventPlan(
         activity=act,
-        description=f"{_field_noun(work, act)} {work['action']}".strip(),
+        description=_work_phrase(work, act),
         action=work["action"],
         status="completed",
         discipline=act["discipline"],
@@ -237,7 +255,7 @@ def build_normal_shorthand(rng, act, rdate, work, l6):
         ident = ""
         _no_identifier(p)
 
-    text = f"{code} - {noun}{ident} {alias} @ {loc_word}, {phrase}, done."
+    text = f"{code} - {_join_action(noun + ident, alias)} @ {loc_word}, {phrase}, done."
     p.evidence = text
     return text, [p], "daily_report"
 
@@ -273,7 +291,7 @@ def build_noisy(rng, act, rdate, work, l6):
 
     # Add typos
     at = f" @ {loc_word}" if loc_word else ""
-    text = f"{noun} {alias}{at} {phrase} completd."
+    text = f"{_join_action(noun, alias)}{at} {phrase} completd."
     text = " ".join(text.replace(" ,", ",").split())
     p.evidence = text
     return text, [p], "daily_report"
@@ -425,20 +443,42 @@ def build_irrelevant(rng):
 
 
 def build_no_match(rng, l6, rdate):
-    """Report describes work not in schedule -> no match."""
-    # Generate fictitious work not in schedule
-    disc = rng.choice(list(DISCIPLINES.keys()))
-    work = rng.choice(DISCIPLINES[disc]["works"])
-    loc = rng.choice(DISCIPLINES[disc]["locations"])
+    """Legitimate project work at a location with NO scheduled activities.
+
+    The description is real engineering language, but the (discipline, action,
+    location) triple is verified absent from the schedule, so no schedule
+    activity is a plausible attribute match.
+    """
+    scheduled_locs = {r["location"] for r in l6}
+    free_locs = [l for l in UNSCHEDULED_LOCATIONS if l not in scheduled_locs]
+    if not free_locs:
+        raise RuntimeError("no unscheduled locations left for no_match cases")
+
+    for _ in range(50):
+        loc = rng.choice(free_locs)
+        disc = rng.choice(list(DISCIPLINES))
+        work = rng.choice(DISCIPLINES[disc]["works"])
+        # programmatic verification: no schedule activity may match
+        clash = any(
+            r["location"] == loc and r["discipline"] == disc
+            and _work_for(disc, r["activity_name"])["action"] == work["action"]
+            for r in l6)
+        if not clash:
+            break
+    else:
+        raise RuntimeError("could not find a verified no_match combination")
+
+    noun = work["field_noun"].format(size=rng.choice(SIZES)).strip()
+    phrase = _phrase_for(work, noun)
 
     p = EventPlan(
         activity={},  # no schedule activity
-        description=f"{work['field_noun']} {work['action']}",
+        description=phrase,
         action=work["action"],
         status="completed",
         discipline=disc,
         location=loc,
-        candidate_pool=[],  # empty: no match
+        candidate_pool=[],  # empty: verified no match
         gold_match_id=None,
         match_reason="no_schedule_match",
     )
@@ -447,7 +487,7 @@ def build_no_match(rng, l6, rdate):
     p.warnings += ["missing_line_number", "missing_time", "no_schedule_candidate"]
     _no_identifier(p)
 
-    text = f"{work['action']} of {work['field_noun']} completed at {loc} today."
+    text = f"{phrase[0].upper()}{phrase[1:]} completed at {loc} today."
     p.evidence = text
     return text, [p], "daily_report"
 
@@ -521,12 +561,19 @@ def main() -> None:
         for j, p in enumerate(plans, start=1):
             eid = f"{rid}-EVT-{j:02d}"
             events.append(p.to_gold(eid))
+            if p.gold_match_id is None:
+                decision = "no_match"
+            elif p.match_reason == "ambiguous_multiple_candidates":
+                # gold truth is known, but a system must NOT auto-match here
+                decision = "human_review"
+            else:
+                decision = "auto_match"
             matches.append({
                 "report_id": rid,
                 "event_id": eid,
                 "candidate_pool": p.candidate_pool,
                 "schedule_activity_id": p.gold_match_id,
-                "decision": "auto_match" if p.gold_match_id else "no_match",
+                "decision": decision,
                 "reason": p.match_reason,
             })
         golds.append({
@@ -549,10 +596,12 @@ def main() -> None:
     n_ev = sum(len(g["events"]) for g in golds)
     n_irr = sum(1 for g in golds if not g["events"])
     n_no_match = sum(1 for m in matches if m["decision"] == "no_match")
+    n_review = sum(1 for m in matches if m["decision"] == "human_review")
     n_hard = sum(1 for m in matches if len(m["candidate_pool"]) > 1)
     print(f"{OUT_REPORTS}: {len(reports)} reports")
     print(f"{OUT_GOLD}: {n_ev} gold events ({n_irr} irrelevant reports)")
-    print(f"{OUT_MATCH}: {len(matches)} matches ({n_no_match} no_match, {n_hard} with hard negatives)")
+    print(f"{OUT_MATCH}: {len(matches)} matches "
+          f"({n_no_match} no_match, {n_review} human_review, {n_hard} with hard negatives)")
 
 
 if __name__ == "__main__":

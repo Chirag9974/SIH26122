@@ -154,7 +154,18 @@ LOCATION_ALIASES = {
     "Pipe Rack North": ["pipe rack north", "prn", "pipe rack n"],
     "Cable Trench T-4": ["cable trench t-4", "trench t-4", "t-4 trench"],
     "Wellhead Pad 2": ["wellhead pad 2", "wh pad 2", "whp-2"],
+    # unscheduled locations: real project areas with NO scheduled activities.
+    # Used only to generate genuine no_match reports.
+    "Unit 400": ["unit 400", "u-400", "u400", "unit-400"],
+    "Pipe Rack South": ["pipe rack south", "prs", "pipe rack s"],
+    "Substation 2": ["substation 2", "ss-2", "ss 2", "substn 2"],
+    "Area 30": ["area 30", "a-30", "ar 30", "area-30"],
+    "Flare Area": ["flare area", "flare"],
 }
+
+#: Locations guaranteed absent from the generated schedule (no_match cases).
+UNSCHEDULED_LOCATIONS = ["Unit 400", "Pipe Rack South", "Substation 2",
+                         "Area 30", "Flare Area"]
 
 STATUS_CUES = {
     "completed": ["completed", "complete", "done", "finished", "closed out", "achieved",
