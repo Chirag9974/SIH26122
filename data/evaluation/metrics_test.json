@@ -1,39 +1,39 @@
 {
   "split": "test",
-  "n_reports": 138,
+  "n_reports": 178,
   "relevance": {
     "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
-    "tp": 130,
+    "recall": 0.9458,
+    "f1": 0.9721,
+    "tp": 157,
     "fp": 0,
-    "fn": 0,
-    "tn": 8
+    "fn": 9,
+    "tn": 12
   },
   "event_detection": {
-    "precision": 0.9758,
-    "recall": 1.0,
-    "f1": 0.9877,
-    "tp": 161,
-    "fp": 4,
-    "fn": 0
+    "precision": 0.9522,
+    "recall": 0.9567,
+    "f1": 0.9544,
+    "tp": 199,
+    "fp": 10,
+    "fn": 9
   },
-  "field_accuracy_overall": 0.9888,
+  "field_accuracy_overall": 0.9759,
   "field_accuracy": {
     "activity.action": 1.0,
     "context.discipline": 1.0,
-    "context.line_number": 0.9876,
+    "context.line_number": 0.9749,
     "context.location": 1.0,
-    "execution.assertion": 1.0,
-    "execution.progress_percent": 0.9752,
-    "execution.status": 0.9752,
-    "quantity.completed": 0.9752,
-    "quantity.total": 0.9752,
+    "execution.assertion": 0.9899,
+    "execution.progress_percent": 0.9196,
+    "execution.status": 0.9045,
+    "quantity.completed": 0.9849,
+    "quantity.total": 0.9849,
     "time.time_certainty": 1.0
   },
   "datetime_accuracy": {
     "start": 1.0,
-    "end": 1.0,
+    "end": 0.9196,
     "certainty": 1.0
   },
   "evidence_coverage": 1.0,
@@ -43,8 +43,13 @@
       "fp": 0,
       "fn": 0
     },
+    "conflict": {
+      "tp": 8,
+      "fp": 0,
+      "fn": 0
+    },
     "multi": {
-      "tp": 47,
+      "tp": 62,
       "fp": 0,
       "fn": 0
     },
@@ -54,37 +59,42 @@
       "fn": 0
     },
     "noisy": {
-      "tp": 24,
+      "tp": 26,
       "fp": 0,
       "fn": 0
     },
     "normal_formal": {
-      "tp": 30,
-      "fp": 0,
+      "tp": 36,
+      "fp": 6,
       "fn": 0
     },
     "normal_shorthand": {
-      "tp": 20,
+      "tp": 15,
       "fp": 0,
-      "fn": 0
+      "fn": 9
     },
     "partial": {
-      "tp": 16,
-      "fp": 4,
+      "tp": 20,
+      "fp": 3,
+      "fn": 0
+    },
+    "suspended": {
+      "tp": 8,
+      "fp": 1,
       "fn": 0
     }
   },
   "candidate_pool_quality": {
-    "matchable_events": 161,
-    "pool_contains_gold": 161,
+    "matchable_events": 199,
+    "pool_contains_gold": 199,
     "pool_recall": 1.0,
-    "avg_pool_size": 9.0,
-    "with_hard_negatives": 161,
+    "avg_pool_size": 8.96,
+    "with_hard_negatives": 199,
     "no_match_events": 0,
     "no_match_pool_empty": 0
   },
   "gold_decisions": {
-    "auto_match": 149,
+    "auto_match": 187,
     "human_review": 12
   }
 }

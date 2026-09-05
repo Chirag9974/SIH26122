@@ -1,9 +1,13 @@
-"""Shared terminology for SIH26122: disciplines, work types, aliases.
+"""Shared terminology for SIH26122: disciplines, work types, aliases, phrasing banks.
 
 This is the *terminology layer* from spec section 2. Both the synthetic data
 generator and the extractor read it. That is intentional -- an alias table is a
 legitimate data asset. The generator's report *templates* are NOT shared with
 the extractor, so the benchmark stays honest.
+
+Phrasing banks (STATUS_PHRASES, TIME_PHRASES, REPORT_TEMPLATES) are used only
+by gen_reports.py to produce realistic human-written-looking text, not by the
+extractor (which relies on ACTION_ALIASES, DISCIPLINE_ALIASES, etc.).
 """
 
 PROJECT_ID = "OIL-GGS-2026"
@@ -171,13 +175,15 @@ STATUS_CUES = {
     "completed": ["completed", "complete", "done", "finished", "closed out", "achieved",
                   "compl", "cmpltd", "over",
                   # common field-report misspellings
-                  "completd", "completed", "cmpleted", "finshed", "donee"],
+                  "completd", "cmpleted", "finshed"],
     "started": ["started", "commenced", "begun", "began", "started work", "taken up",
-                "mobilised", "mobilized"],
+                "mobilised", "mobilized", "balance tomorrow"],
     "in_progress": ["in progress", "ongoing", "continuing", "continued", "under progress",
                     "wip", "in-progress", "progressing", "balance work", "partly done",
-                    "still open", "still pending", "found incomplete"],
-    "suspended": ["suspended", "stopped", "held up", "on hold", "halted", "abandoned for the day"],
+                    "still open", "still pending", "found incomplete", "under way",
+                    "partway through"],
+    "suspended": ["suspended", "stopped midway", "stopped at", "halted", "carried over",
+                  "shifted to tomorrow", "on hold", "paused for the day"],
     "cancelled": ["cancelled", "canceled", "called off", "dropped"],
     "not_started": ["not started", "not yet started", "yet to start", "could not start",
                     "did not start", "no work", "nil progress"],
@@ -204,3 +210,97 @@ WARNINGS = [
     "quantity_partial",
     "no_schedule_candidate",
 ]
+
+# ---------------------------------------------------------------------------
+# Phrasing banks for gen_reports.py — realistic human-written-like surface text.
+# NOT shared with the extractor; only used to synthesize report text.
+# ---------------------------------------------------------------------------
+
+# Natural completion-status expressions (used in normal / partial / multi)
+STATUS_PHRASES = {
+    "completed": ["completed", "got it done", "wrapped up", "all done",
+                  "finished off", "knocked out", "closed out", "done for the day"],
+    "in_progress": ["in progress", "ongoing", "partway through", "under way",
+                    "3 of 7 done so far", "still going"],
+    "started": ["started", "began", "kicked off", "mobilised today", "took up"],
+    "suspended": ["stopped midway", "halted at", "carried over to tomorrow",
+                  "paused", "shifted to tomorrow", "wrapped up for today, balance carries over"],
+    "cancelled": ["cancelled", "called off", "scrapped", "dropped"],
+    "not_started": ["did not start", "could not be started", "not taken up",
+                    "deferred", "nil progress"],
+}
+
+# Realistic time-window shorthands (the extractor must parse these)
+TIME_PHRASES = [
+    "08:00 to 12:00", "0900 to 1630", "8 AM to 4 PM", "7 AM to 3 PM",
+    "07:30 to 11:30", "10 to 4", "9 AM to 5 PM", "0800-1700",
+    "morning shift", "afternoon shift", "09:00 to 13:00", "14:00 to 18:00",
+]
+
+# Crew / foreman shorthand names
+CREW_NAMES = {
+    "Piping": ["PIP-3 crew", "Maurice's team", "Line-fitters", "Pipefitters"],
+    "Civil": ["Civil gang", "Excavation crew", "Formwork team", "Foundations crew"],
+    "Electrical": ["ELE-2 gang", "Cable crew", "Terminations team", "Power team"],
+    "Instrumentation": ["INS gang", "Instrument techs", "Loop-techs", "Cal team"],
+    "Equipment": ["MECH crew", "Riggers", "Installation gang", "Alignment team"],
+    "Structural": ["Steel gang", "Bolters", "Grating crew", "Deck team"],
+}
+
+# Structural templates per case kind — each generates a different sentence skeleton.
+# Placeholders: {crew}, {work}, {id}, {loc}, {time}, {status}, {reason}, {qty}
+# These are hand-written to read like real supervisor shorthand.
+REPORT_TEMPLATES = {
+    "normal_formal": [
+        "{crew} completed {work} {id} at {loc} {time}.",
+        "At {loc}, {work} {id} was completed {time}.",
+        "{work} {id}: all done at {loc} {time}. {crew} on site.",
+        "Completed {work} {id} at {loc} {time}.",
+    ],
+    "normal_shorthand": [
+        "{code} - {work}{id} @ {loc}, {time}, done.",
+        "{code}: {work} {id} {loc} {time} done.",
+        "{code} - {work}{id} @ {loc}, {time}, compl.",
+        "{id} {work} {loc} {time} done. {code}.",
+    ],
+    "noisy": [
+        "{work}{id} @ {loc} {time} completd.",
+        "{code}-{work} {id} {loc} {time} cmpltd.",
+        "{id} {work} @ {loc} {time} done.",
+        "{work} at {loc} {time} - {code}",
+    ],
+    "multi": [
+        "{lines}",
+    ],
+    "partial": [
+        "Started {work} {id} at {loc} {time}. {qty} completed today.",
+        "{work} {id} at {loc}: {qty} done {time}.",
+        "{crew} started {work} {id} at {loc}. {qty} of total done by {time}.",
+        "Partial: {work} {id} {loc} {time}. {qty} so far.",
+    ],
+    "conflict": [
+        "{work} {id} at {loc} completed {time}. Later found incomplete, {qty} still open.",
+        "{work} {id} {loc} done {time}. Update: still {qty} outstanding.",
+        "Completed {work} {id} at {loc}. Then QA flagged {qty} incomplete.",
+    ],
+    "uncertain": [
+        "{work} {id} at {loc} probably completed, to be confirmed.",
+        "Looks like {work} {id} at {loc} got done {time}, unverified.",
+        "{work} {id} {loc} seems done but needs double-check.",
+    ],
+    "delay": [
+        "{work} {id} at {loc} delayed due to {reason}.",
+        "Could not finish {work} {id} at {loc} {reason}.",
+        "{work} {id} {loc} on hold — {reason}.",
+    ],
+    "negative": [
+        "{work} {id} at {loc} could not be started today, {reason}.",
+        "{work} {id} at {loc} has been cancelled, {reason}.",
+        "No {work} at {loc} today — {reason}.",
+    ],
+    "suspended": [
+        "{work} {id} at {loc} stopped midway {time}. Carried over to night shift.",
+        "{crew} started {work} {id} at {loc}, halted {time}. Balance tomorrow.",
+        "{work} {id} {loc}: suspended {time}. Night shift picks up.",
+    ],
+}

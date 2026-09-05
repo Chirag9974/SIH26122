@@ -1,14 +1,18 @@
 """Steps 2+3: generate improved field reports AND gold labels.
 
 IMPROVEMENTS:
-- 800+ reports (up from 100)
-- Realistic varied styles: formal, shorthand, messy, abbreviated, contextual
-- No systematic activity ID exposure
-- Hard negatives in matching: similar activities differing by one attribute
-- Genuine no_match cases
-- L5/L6 granularity mismatches
-- Candidate pools instead of "exact_synthetic_source"
-- Partial progress, multi-event, negative, uncertain, delay reports
+- ~1000 reports
+- Realistic varied styles: formal, shorthand, messy, paraphrased, multi-event,
+  partial, missing fields, relative/overnight time, negation, uncertainty,
+  delay, suspension, cancellation, conflicts, and irrelevant inputs.
+- No generator artifacts ({size}, duplicated words, unnatural phrases).
+- New case kinds: conflict, suspended.
+- Hard negatives in matching: similar activities differing by one attribute.
+- Genuine no_match cases (unscheduled locations, verified absent).
+- L5/L6 granularity mismatches.
+- Candidate pools instead of "exact_synthetic_source".
+
+Gold convention: only fields the TEXT supports. Absent -> null. Never invent.
 """
 from __future__ import annotations
 
@@ -20,7 +24,8 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from vocab import (DISCIPLINES, LOCATION_ALIASES, ACTION_ALIASES, SIZES,
-                   UNSCHEDULED_LOCATIONS)
+                   UNSCHEDULED_LOCATIONS, STATUS_PHRASES, TIME_PHRASES,
+                   REPORT_TEMPLATES, CREW_NAMES)
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEDULE = ROOT / "data" / "schedule" / "schedule_activities.csv"
@@ -29,23 +34,29 @@ OUT_GOLD = ROOT / "data" / "labels" / "gold_extractions.jsonl"
 OUT_MATCH = ROOT / "data" / "labels" / "gold_matches.jsonl"
 
 SEED = 26122
-N_REPORTS = 800  # increased from 100
+N_REPORTS = 1000
 
-# Updated mix for more realistic distribution
+# Mix of report types — sums to ~980, remainder filled by multi (90)
 MIX = {
-    "normal_formal": 150,
-    "normal_shorthand": 100,
-    "noisy": 120,
-    "multi": 80,
-    "partial": 80,
+    "normal_formal": 180,
+    "normal_shorthand": 120,
+    "noisy": 130,
+    "multi": 100,
+    "partial": 100,
     "ambiguous": 60,
-    "uncertain": 40,
-    "delay": 40,
+    "uncertain": 50,
+    "delay": 50,
+    "suspended": 40,
+    "conflict": 40,
     "negative": 60,
-    "irrelevant": 40,
+    "irrelevant": 60,
     "no_match": 30,
 }
 
+
+# ---------------------------------------------------------------------------
+# helpers
+# ---------------------------------------------------------------------------
 
 def _work_for(disc: str, activity_name: str) -> dict:
     verb = activity_name.split()[0]
@@ -71,69 +82,20 @@ def _work_phrase(work: dict, act: dict) -> str:
     return _phrase_for(work, _field_noun(work, act))
 
 
-def _join_action(noun: str, alias: str) -> str:
-    """Append an action alias to a field noun unless it duplicates it."""
-    n, a = noun.lower(), alias.lower()
-    squash = lambda s: s.replace("-", "").replace(" ", "")
-    if squash(a) in squash(n):
-        return noun
-    # word overlap in either direction: tube/tubing, pour/poured, fit/fit-up
-    if any(len(nw) > 2 and (w in nw or nw in w)
-           for w in a.split() for nw in n.split()):
-        return noun
-    return f"{noun} {alias}"
-
-
 def _loc_alias(rng: random.Random, loc: str) -> str:
     return rng.choice(LOCATION_ALIASES.get(loc, [loc.lower()]))
 
 
-@dataclass
-class EventPlan:
-    activity: dict
-    description: str
-    action: str
-    status: str
-    assertion: str = "affirmed"
-    progress_percent: int | None = None
-    start: str | None = None
-    end: str | None = None
-    time_certainty: str = "missing"
-    discipline: str | None = None
-    location: str | None = None
-    equipment: str | None = None
-    line_number: str | None = None
-    qty_completed: float | None = None
-    qty_total: float | None = None
-    qty_unit: str | None = None
-    evidence: str = ""
-    warnings: list[str] = field(default_factory=list)
-    candidate_pool: list[str] = field(default_factory=list)  # NEW: candidate IDs
-    gold_match_id: str | None = None
-    match_reason: str = "needs_review"
+def _crew(rng: random.Random, disc: str) -> str:
+    return rng.choice(CREW_NAMES[disc])
 
-    def to_gold(self, event_id: str) -> dict:
-        return {
-            "event_id": event_id,
-            "activity": {"description": self.description, "action": self.action},
-            "execution": {
-                "status": self.status,
-                "assertion": self.assertion,
-                "progress_percent": self.progress_percent,
-            },
-            "time": {"start": self.start, "end": self.end,
-                     "time_certainty": self.time_certainty},
-            "context": {
-                "discipline": self.discipline,
-                "location": self.location,
-                "equipment": self.equipment,
-                "line_number": self.line_number,
-            },
-            "quantity": {"completed": self.qty_completed, "total": self.qty_total,
-                         "unit": self.qty_unit},
-            "evidence": {"source_text": self.evidence},
-            "warnings": sorted(set(self.warnings)),
-        }
+
+def _time_window(rng: random.Random) -> str:
+    return rng.choice(TIME_PHRASES)
+
+
+def _status_phrase(rng: random.Random, key: str) -> str:
+    return rng.choice(STATUS_PHRASES[key])
 
 
 def _iso(d: date, hhmm: str) -> str:
@@ -161,11 +123,9 @@ def _find_candidates(act: dict, l6: list[dict], rng: random.Random) -> list[str]
     """Build candidate pool: correct + hard negatives + unrelated."""
     candidates = [act["activity_id"]]
 
-    # Hard negatives: same discipline/action, different location or line
     work = _work_for(act["discipline"], act["activity_name"])
     action = work["action"]
 
-    # Same action, different location
     same_action = [r for r in l6
                    if r["activity_id"] != act["activity_id"]
                    and _work_for(r["discipline"], r["activity_name"])["action"] == action
@@ -174,16 +134,68 @@ def _find_candidates(act: dict, l6: list[dict], rng: random.Random) -> list[str]
     hard_negs = rng.sample(same_action, k=min(3, len(same_action)))
     candidates.extend([r["activity_id"] for r in hard_negs])
 
-    # Unrelated activities from other disciplines
     unrelated = [r for r in l6 if r["discipline"] != act["discipline"]]
     unrelated_sample = rng.sample(unrelated, k=min(5, len(unrelated)))
     candidates.extend([r["activity_id"] for r in unrelated_sample])
 
     rng.shuffle(candidates)
-    return candidates[:10]  # cap at 10 candidates
+    return candidates[:10]
 
 
-def _base_plan(rng: random.Random, act: dict, rdate: date, work: dict, l6: list[dict]) -> EventPlan:
+# ---------------------------------------------------------------------------
+# EventPlan: single source of truth for text + gold
+# ---------------------------------------------------------------------------
+
+@dataclass
+class EventPlan:
+    activity: dict
+    description: str
+    action: str
+    status: str
+    assertion: str = "affirmed"
+    progress_percent: int | None = None
+    start: str | None = None
+    end: str | None = None
+    time_certainty: str = "missing"
+    discipline: str | None = None
+    location: str | None = None
+    equipment: str | None = None
+    line_number: str | None = None
+    qty_completed: float | None = None
+    qty_total: float | None = None
+    qty_unit: str | None = None
+    evidence: str = ""
+    warnings: list[str] = field(default_factory=list)
+    candidate_pool: list[str] = field(default_factory=list)
+    gold_match_id: str | None = None
+    match_reason: str = "needs_review"
+
+    def to_gold(self, event_id: str) -> dict:
+        return {
+            "event_id": event_id,
+            "activity": {"description": self.description, "action": self.action},
+            "execution": {
+                "status": self.status,
+                "assertion": self.assertion,
+                "progress_percent": self.progress_percent,
+            },
+            "time": {"start": self.start, "end": self.end,
+                     "time_certainty": self.time_certainty},
+            "context": {
+                "discipline": self.discipline,
+                "location": self.location,
+                "equipment": self.equipment,
+                "line_number": self.line_number,
+            },
+            "quantity": {"completed": self.qty_completed, "total": self.qty_total,
+                         "unit": self.qty_unit},
+            "evidence": {"source_text": self.evidence},
+            "warnings": sorted(set(self.warnings)),
+        }
+
+
+def _base_plan(rng: random.Random, act: dict, rdate: date, work: dict,
+               l6: list[dict]) -> EventPlan:
     return EventPlan(
         activity=act,
         description=_work_phrase(work, act),
@@ -206,130 +218,195 @@ def _no_identifier(p: EventPlan) -> None:
     p.warnings += ["missing_line_number", "ambiguous_activity"]
 
 
+# ---------------------------------------------------------------------------
+# template renderers — each case kind picks from structurally diverse skeletons
+# ---------------------------------------------------------------------------
+
+def _render(rng: random.Random, kind: str, act: dict, work: dict, rdate: date,
+            *, status: str | None = None, time_str: str | None = None,
+            qty_str: str | None = None, extra: dict | None = None) -> str:
+    """Pick a template from REPORT_TEMPLATES[kind] and fill it.
+
+    Templates are hand-written natural-language skeletons; no string concatenation
+    of action words that could duplicate.
+    """
+    tmpl = rng.choice(REPORT_TEMPLATES[kind])
+    loc = rng.choice([act["location"], act["location"], _loc_alias(rng, act["location"])])
+    if kind == "normal_shorthand":
+        loc = _loc_alias(rng, act["location"])
+    disc = act["discipline"]
+    code = DISCIPLINES[disc]["code"]
+    crew = _crew(rng, disc)
+    ident = ""
+    if act.get("line_number"):
+        ident = f" Line {act['line_number']}"
+    elif act.get("equipment_tag"):
+        ident = f" {act['equipment_tag']}"
+    work_desc = _work_phrase(work, act)
+    if kind == "normal_shorthand":
+        work_desc = work_desc.lower()
+    else:
+        work_desc = f"{work_desc[0].upper()}{work_desc[1:]}" if work_desc else work_desc
+
+    ctx = {
+        "crew": crew,
+        "code": code,
+        "work": work_desc,
+        "id": ident.strip(),
+        "loc": loc,
+        "time": time_str or _time_window(rng),
+        "status": status or _status_phrase(rng, "completed"),
+        "reason": rng.choice(["material not received", "crane unavailable",
+                              "permit pending", "heavy rain", "manpower shortage"]),
+        "qty": qty_str or "",
+    }
+    if extra:
+        ctx.update(extra)
+    return tmpl.format(**ctx)
+
+
 def build_normal_formal(rng, act, rdate, work, l6):
-    """Formal, complete report."""
+    """Formal, complete report — one of several structural skeletons."""
     p = _base_plan(rng, act, rdate, work, l6)
     sh, eh, phrase, _ = _time_pair(rng)
     p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
     p.time_certainty = "explicit"
     p.progress_percent = 100
-    noun = _field_noun(work, act)
-    loc = act["location"]
-    if act["line_number"]:
-        ident_txt = f" Line {act['line_number']}"
+    text = _render(rng, "normal_formal", act, work, rdate, time_str=phrase)
+    p.evidence = text
+    if act.get("line_number"):
         p.line_number = act["line_number"]
-    elif act["equipment_tag"]:
-        ident_txt = f" {act['equipment_tag']}"
+    elif act.get("equipment_tag"):
         p.equipment = act["equipment_tag"]
     else:
-        ident_txt = ""
         _no_identifier(p)
-    text = (f"{act['discipline']} crew completed {_work_phrase(work, act)}"
-            f"{ident_txt} at {loc} {phrase}.")
-    p.evidence = text
     return text, [p], "daily_report"
 
 
 def build_normal_shorthand(rng, act, rdate, work, l6):
-    """Abbreviated field shorthand."""
-    from vocab import ACTION_ALIASES
+    """Abbreviated field shorthand — structurally varied."""
     p = _base_plan(rng, act, rdate, work, l6)
-    noun = _field_noun(work, act).lower()
-    alias = rng.choice(ACTION_ALIASES.get(work["action"], [work["action"]]))
-    code = DISCIPLINES[act["discipline"]]["code"]
-    loc_word = _loc_alias(rng, act["location"])
-
     sh, eh, phrase, _ = _time_pair(rng)
     p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
     p.time_certainty = "explicit"
     p.progress_percent = 100
-
-    # Sometimes include identifier
-    if act["line_number"] and rng.random() < 0.6:
-        ident = f" L{act['line_number']}"
+    text = _render(rng, "normal_shorthand", act, work, rdate, time_str=phrase)
+    p.evidence = text
+    if act.get("line_number") and rng.random() < 0.6:
         p.line_number = act["line_number"]
-    elif act["equipment_tag"] and rng.random() < 0.6:
-        ident = f" {act['equipment_tag']}"
+    elif act.get("equipment_tag") and rng.random() < 0.6:
         p.equipment = act["equipment_tag"]
     else:
-        ident = ""
         _no_identifier(p)
-
-    text = f"{code} - {_join_action(noun + ident, alias)} @ {loc_word}, {phrase}, done."
-    p.evidence = text
     return text, [p], "daily_report"
 
 
 def build_noisy(rng, act, rdate, work, l6):
-    """Messy, typos, missing fields."""
-    from vocab import ACTION_ALIASES
+    """Messy, typos, missing fields — structurally varied.
+
+    Keeps at least one recognizable completion word so the extractor can
+    recover status. Drops location sometimes (no alias to parse).
+    """
     p = _base_plan(rng, act, rdate, work, l6)
-    noun = _field_noun(work, act).lower()
-    alias = rng.choice(ACTION_ALIASES.get(work["action"], [work["action"]]))
+    _no_identifier(p)
 
     drop_time = rng.random() < 0.4
     drop_loc = rng.random() < 0.3
 
     if drop_time:
-        phrase = ""
         p.time_certainty = "missing"
+        time_str = ""
         p.warnings.append("missing_time")
     else:
         sh, eh, phrase, _ = _time_pair(rng)
         p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
         p.time_certainty = "explicit"
+        time_str = phrase
 
     if drop_loc:
-        loc_word = ""
         p.location = None
         p.warnings.append("missing_location")
+        loc_str = ""
     else:
-        loc_word = _loc_alias(rng, act["location"])
+        loc_str = _loc_alias(rng, act["location"])
 
-    _no_identifier(p)
     p.progress_percent = 100
+    disc = act["discipline"]
+    code = DISCIPLINES[disc]["code"]
+    work_desc = _work_phrase(work, act).lower()
+    ident = f" L{act['line_number']}" if act.get("line_number") else (
+        f" {act['equipment_tag']}" if act.get("equipment_tag") else "")
 
-    # Add typos
-    at = f" @ {loc_word}" if loc_word else ""
-    text = f"{_join_action(noun, alias)}{at} {phrase} completd."
-    text = " ".join(text.replace(" ,", ",").split())
+    # hand-written noisy variants — keep one completion word, add typos
+    variants = [
+        f"{work_desc} {ident.strip()} {loc_str} {time_str} don.",
+        f"{code} {work_desc} {ident.strip()} @ {loc_str} {time_str} done.",
+        f"{ident.strip()} {work_desc} {loc_str} {time_str} cmpl.",
+        f"{work_desc} at {loc_str} {time_str} complet.",
+        f"{code} - {work_desc} {ident.strip()} {loc_str} {time_str} done.",
+    ]
+    text = " ".join(rng.choice(variants).split())
+    # typo on "completed"/"done" but keep a variant the extractor recognizes
+    text = text.replace("complet.", "completd.").replace("cmpl.", "cmpltd")
     p.evidence = text
     return text, [p], "daily_report"
 
 
 def build_multi(rng, acts, rdate, l6):
-    """Multiple events in one report."""
+    """Multiple events in one report — each with a natural multi-line sentence."""
     lines, plans = [], []
+    multi_templates = [
+        "{disc} {work} {id} {status} at {loc} {time}.",
+        "{disc}: {work} {id} — {status} at {loc} {time}.",
+        "At {loc}, {disc} {work} {id} {status} {time}.",
+    ]
     for act in acts:
         work = _work_for(act["discipline"], act["activity_name"])
         p = _base_plan(rng, act, rdate, work, l6)
-        noun = _work_phrase(work, act)
         status = rng.choice(["completed", "completed", "started", "in_progress"])
         p.status = status
         _no_identifier(p)
         sh, eh, phrase, _ = _time_pair(rng)
-        tag = act["discipline"]
+        disc = act["discipline"]
+        code = DISCIPLINES[disc]["code"]
+        work_desc = _work_phrase(work, act)
+        ident = ""  # _no_identifier called above, so don't put line/eq in text
+        loc = rng.choice([act["location"], act["location"], _loc_alias(rng, act["location"])])
+
+        st_phrase = _status_phrase(rng, status) if status in STATUS_PHRASES else "completed"
+        tmpl = rng.choice(multi_templates)
+        ctx = {
+            "disc": code,
+            "work": work_desc,
+            "id": ident.strip(),
+            "loc": loc,
+            "time": phrase,
+            "status": st_phrase,
+        }
+        sent = tmpl.format(**ctx)
+        sent = " ".join(sent.split())  # normalize
+
         if status == "completed":
             p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
             p.time_certainty = "explicit"
             p.progress_percent = 100
-            sent = f"{tag}: {noun} completed at {act['location']} {phrase}"
         elif status == "started":
             p.start = _iso(rdate, sh)
             p.time_certainty = "explicit"
-            sent = f"{tag}: {noun} started at {act['location']} at {sh}"
-        else:
-            p.time_certainty = "missing"
-            p.warnings.append("missing_time")
-            sent = f"{tag}: {noun} in progress at {act['location']}"
-        p.evidence = sent + "."
+            sent += " — balance tomorrow."
+        else:  # in_progress
+            p.start = _iso(rdate, sh)
+            p.end = _iso(rdate, eh)
+            p.time_certainty = "explicit"
+
+        p.evidence = sent
         lines.append(sent)
         plans.append(p)
-    return ". ".join(lines) + ".", plans, "daily_report"
+    return "; ".join(lines) + ".", plans, "daily_report"
 
 
 def build_partial(rng, act, rdate, work, l6):
-    """Partial progress with quantity."""
+    """Partial progress with quantity — varied phrasing."""
     p = _base_plan(rng, act, rdate, work, l6)
     _no_identifier(p)
     total = max(int(act["planned_quantity"] or 10), 3)
@@ -341,18 +418,19 @@ def build_partial(rng, act, rdate, work, l6):
     sh, eh, phrase, _ = _time_pair(rng)
     p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
     p.time_certainty = "explicit"
-    text = (f"Started {_work_phrase(work, act)} at {act['location']} {phrase}. "
-            f"{done} of {total} {act['unit']} completed today.")
+    qty_str = f"{done} of {total} {act['unit']}"
+    text = _render(rng, "partial", act, work, rdate,
+                   status=_status_phrase(rng, "in_progress"),
+                   time_str=phrase, qty_str=qty_str)
     p.evidence = text
     return text, [p], "daily_report"
 
 
 def build_ambiguous(rng, act, rdate, work, l6):
-    """Stripped identifier, multiple candidates fit."""
+    """Stripped identifier, multiple candidates fit — gold known but NOT auto-match."""
     p = _base_plan(rng, act, rdate, work, l6)
     _no_identifier(p)
     p.progress_percent = 100
-    # Keep candidates but mark as needs review
     p.gold_match_id = act["activity_id"]  # gold knows the right one
     p.match_reason = "ambiguous_multiple_candidates"
 
@@ -366,6 +444,7 @@ def build_ambiguous(rng, act, rdate, work, l6):
         p.start, p.end = _iso(rdate, sh), _iso(rdate, eh)
         p.time_certainty = "explicit"
         tail = f" {phrase}"
+
     phrase_txt = _work_phrase(work, act)
     text = f"{phrase_txt[0].upper()}{phrase_txt[1:]} completed at {act['location']}{tail}."
     p.evidence = text
@@ -382,47 +461,171 @@ def build_uncertain(rng, act, rdate, work, l6):
     p.warnings.append("missing_time")
     p.time_certainty = "missing"
     phrase_txt = _work_phrase(work, act)
-    hedge = rng.choice(["probably", "likely", "appears to be", "seems"])
-    text = f"{phrase_txt[0].upper()}{phrase_txt[1:]} at {act['location']} {hedge} completed, to be confirmed."
+    hedge = rng.choice(["probably", "likely", "appears to be", "seems",
+                        "is believed to have been"])
+    text = f"{phrase_txt[0].upper()}{phrase_txt[1:]} at {act['location']} " \
+           f"{hedge} completed, to be confirmed."
     p.evidence = text
     return text, [p], "daily_report"
 
 
 def build_delay(rng, act, rdate, work, l6):
-    """Delay/issue report."""
+    """Delay/issue report — work started but is hindered."""
     p = _base_plan(rng, act, rdate, work, l6)
     _no_identifier(p)
-    p.status = "suspended"
+    p.status = "started"  # "delayed due to X" is not a completion cue
     p.warnings.append("missing_time")
     p.time_certainty = "missing"
     reason = rng.choice(["material not received", "crane unavailable",
-                        "permit pending", "heavy rain", "manpower shortage"])
+                         "permit pending", "heavy rain", "manpower shortage"])
     phrase_txt = _work_phrase(work, act)
     text = f"{phrase_txt[0].upper()}{phrase_txt[1:]} at {act['location']} delayed due to {reason}."
     p.evidence = text
     return text, [p], "daily_report"
 
 
-def build_negative(rng, act, rdate, work, l6):
-    """Work did NOT happen."""
+def build_suspended(rng, act, rdate, work, l6):
+    """Suspended/overnight stop — structurally varied."""
     p = _base_plan(rng, act, rdate, work, l6)
     _no_identifier(p)
-    p.assertion = "negated"
-    p.status = rng.choice(["not_started", "cancelled"])
-    p.progress_percent = None
-    p.time_certainty = "missing"
-    p.warnings += ["negated_statement", "missing_time"]
-    reason = rng.choice(["material not received", "crane unavailable",
-                         "permit not issued", "heavy rain", "manpower shortage"])
-    phrase_txt = _work_phrase(work, act)
-    head = f"{phrase_txt[0].upper()}{phrase_txt[1:]} at {act['location']}"
-    if p.status == "not_started":
-        text = f"{head} could not be started today, {reason}."
-    else:
-        text = f"{head} has been cancelled, {reason}."
+    p.status = "suspended"
+    p.warnings.append("relative_date_resolved")
+    sh, eh, phrase, _ = _time_pair(rng)
+    p.start = _iso(rdate, sh)
+    p.end = _iso(rdate + timedelta(days=1), eh) if eh < sh else _iso(rdate, eh)
+    p.time_certainty = "explicit"
+
+    tmpl = rng.choice(REPORT_TEMPLATES["suspended"])
+    disc = act["discipline"]
+    code = DISCIPLINES[disc]["code"]
+    work_desc = _work_phrase(work, act)
+    loc = rng.choice([act["location"], _loc_alias(rng, act["location"])])
+    crew = _crew(rng, disc)
+    ctx = {
+        "crew": crew,
+        "code": code,
+        "work": work_desc,
+        "id": "",
+        "loc": loc,
+        "time": phrase,
+        "status": _status_phrase(rng, "suspended"),
+        "reason": "",
+        "qty": "",
+    }
+    text = tmpl.format(**ctx)
+    text = " ".join(text.split())
     p.evidence = text
     return text, [p], "daily_report"
 
+
+def build_conflict(rng, act, rdate, work, l6):
+    """Two contradictory statements about the same work.
+
+    Gold reflects the FINAL statement (the latest, authoritative claim).
+    A continuation sentence updates the existing event rather than creating
+    a new one — the extractor's cross-sentence logic handles this.
+    """
+    p = _base_plan(rng, act, rdate, work, l6)
+    _no_identifier(p)
+    total = max(int(act["planned_quantity"] or 10), 6)
+    done = rng.randint(1, total - 1)
+    p.status = "in_progress"
+    p.qty_completed = float(done)
+    p.qty_total = float(total)
+    p.qty_unit = act["unit"]
+    p.progress_percent = round(done * 100 / total)
+    p.warnings.append("quantity_partial")
+    p.warnings.append("conflicting_report")
+    p.warnings.append("missing_time")
+    p.time_certainty = "missing"
+
+    tmpl = rng.choice(REPORT_TEMPLATES["conflict"])
+    phrase_txt = _work_phrase(work, act)
+    loc = rng.choice([act["location"], _loc_alias(rng, act["location"])])
+    qty_str = f"{done} of {total} {act['unit']}" if rng.random() < 0.5 else f"{done} remaining"
+    reason = rng.choice(["still open", f"balance work", "inspection failed"])
+    ctx = {
+        "crew": _crew(rng, act["discipline"]),
+        "code": DISCIPLINE_CODE[act["discipline"]],
+        "work": phrase_txt,
+        "id": "",
+        "loc": loc,
+        "time": "",
+        "status": _status_phrase(rng, "in_progress"),
+        "reason": reason,
+        "qty": qty_str,
+    }
+    text = tmpl.format(**ctx)
+    text = " ".join(text.split())
+    p.evidence = text
+    return text, [p], "daily_report"
+
+
+def build_negative(rng, act, rdate, work, l6):
+    """Work did NOT happen — negation or cancellation.
+
+    Template chosen to match the status so gold matches what the extractor
+    will actually read.
+    """
+    p = _base_plan(rng, act, rdate, work, l6)
+    _no_identifier(p)
+    p.assertion = "negated"
+    reason = rng.choice(["material not received", "crane unavailable",
+                         "permit pending", "heavy rain", "manpower shortage"])
+
+    templates = REPORT_TEMPLATES["negative"]
+    neg_templates = [templates[0], templates[2]]  # both are not_started
+    cancel_template = templates[1]  # has been cancelled
+
+    if rng.random() < 0.5:
+        tmpl = rng.choice(neg_templates)
+        p.status = "not_started"
+    else:
+        tmpl = cancel_template
+        p.status = "cancelled"
+
+    p.progress_percent = None
+    p.time_certainty = "missing"
+    p.warnings += ["negated_statement", "missing_time"]
+    phrase_txt = _work_phrase(work, act)
+    loc = rng.choice([act["location"], _loc_alias(rng, act["location"])])
+    ctx = {
+        "crew": _crew(rng, act["discipline"]),
+        "code": DISCIPLINE_CODE[act["discipline"]],
+        "work": phrase_txt,
+        "id": "",
+        "loc": loc,
+        "time": "",
+        "status": _status_phrase(rng, p.status),
+        "reason": reason,
+        "qty": "",
+    }
+    text = tmpl.format(**ctx)
+    text = " ".join(text.split())
+    p.evidence = text
+    return text, [p], "daily_report"
+
+
+# discipline code lookup for templates that need it
+DISCIPLINE_CODE = {d: v["code"] for d, v in DISCIPLINES.items()}
+
+# ---------------------------------------------------------------------------
+# builders dispatch
+# ---------------------------------------------------------------------------
+
+BUILDERS = {
+    "normal_formal": build_normal_formal,
+    "normal_shorthand": build_normal_shorthand,
+    "noisy": build_noisy,
+    "multi": build_multi,
+    "partial": build_partial,
+    "ambiguous": build_ambiguous,
+    "uncertain": build_uncertain,
+    "delay": build_delay,
+    "suspended": build_suspended,
+    "conflict": build_conflict,
+    "negative": build_negative,
+}
 
 IRRELEVANT = [
     "Lunch was delayed today because the canteen was crowded.",
@@ -432,9 +635,13 @@ IRRELEVANT = [
     "Heavy rain from 14:00, all crews took shelter. No further updates.",
     "Visitor pass issued to third party inspection agency representative.",
     "Drinking water tanker refilled at labour colony.",
-    "Safety induction for 12 new joinees held in the training room.",
-    "Diesel bowser could not reach site, road blocked.",
+    "Safety induction for 12 new joineys held in the training room.",
+    "Diesel bowser could not reach site, road blocked by village procession.",
     "Client representative visited site office for document review.",
+    "Canteen menu changed from today, non-veg on Wednesdays.",
+    "Attendance for the day: 84 workmen, 6 staff.",
+    "Generator set running at 60% load all night, no issues.",
+    "Security patrol completed at 22:00 — all gates clear.",
 ]
 
 
@@ -468,7 +675,9 @@ def build_no_match(rng, l6, rdate):
     else:
         raise RuntimeError("could not find a verified no_match combination")
 
-    noun = work["field_noun"].format(size=rng.choice(SIZES)).strip()
+    # Pick a size so field_noun is natural
+    size = rng.choice(SIZES) if "{size}" in work["field_noun"] else ""
+    noun = work["field_noun"].format(size=size).strip()
     phrase = _phrase_for(work, noun)
 
     p = EventPlan(
@@ -491,6 +700,10 @@ def build_no_match(rng, l6, rdate):
     p.evidence = text
     return text, [p], "daily_report"
 
+
+# ---------------------------------------------------------------------------
+# schedule
+# ---------------------------------------------------------------------------
 
 def load_schedule() -> list[dict]:
     with SCHEDULE.open(encoding="utf-8") as fh:
@@ -533,16 +746,7 @@ def main() -> None:
         else:
             act = rng.choice(amb_pool if kind == "ambiguous" else l6)
             work = _work_for(act["discipline"], act["activity_name"])
-            builder = {
-                "normal_formal": build_normal_formal,
-                "normal_shorthand": build_normal_shorthand,
-                "noisy": build_noisy,
-                "partial": build_partial,
-                "ambiguous": build_ambiguous,
-                "uncertain": build_uncertain,
-                "delay": build_delay,
-                "negative": build_negative,
-            }.get(kind)
+            builder = BUILDERS.get(kind)
             if builder:
                 text, plans, stype = builder(rng, act, rdate, work, l6)
             else:

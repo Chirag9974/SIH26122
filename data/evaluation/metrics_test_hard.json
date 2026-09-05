@@ -1,11 +1,11 @@
 {
   "split": "test_hard",
-  "n_reports": 110,
+  "n_reports": 130,
   "relevance": {
     "precision": 1.0,
     "recall": 1.0,
     "f1": 1.0,
-    "tp": 110,
+    "tp": 130,
     "fp": 0,
     "fn": 0,
     "tn": 0
@@ -14,19 +14,19 @@
     "precision": 1.0,
     "recall": 1.0,
     "f1": 1.0,
-    "tp": 110,
+    "tp": 130,
     "fp": 0,
     "fn": 0
   },
-  "field_accuracy_overall": 0.9582,
+  "field_accuracy_overall": 0.9938,
   "field_accuracy": {
     "activity.action": 1.0,
-    "context.discipline": 0.9455,
+    "context.discipline": 0.9385,
     "context.line_number": 1.0,
     "context.location": 1.0,
     "execution.assertion": 1.0,
     "execution.progress_percent": 1.0,
-    "execution.status": 0.6364,
+    "execution.status": 1.0,
     "quantity.completed": 1.0,
     "quantity.total": 1.0,
     "time.time_certainty": 1.0
@@ -39,7 +39,7 @@
   "evidence_coverage": 1.0,
   "by_case_kind": {
     "delay": {
-      "tp": 40,
+      "tp": 50,
       "fp": 0,
       "fn": 0
     },
@@ -49,22 +49,22 @@
       "fn": 0
     },
     "uncertain": {
-      "tp": 40,
+      "tp": 50,
       "fp": 0,
       "fn": 0
     }
   },
   "candidate_pool_quality": {
-    "matchable_events": 80,
-    "pool_contains_gold": 80,
+    "matchable_events": 100,
+    "pool_contains_gold": 100,
     "pool_recall": 1.0,
-    "avg_pool_size": 9.0,
-    "with_hard_negatives": 80,
+    "avg_pool_size": 8.93,
+    "with_hard_negatives": 100,
     "no_match_events": 30,
     "no_match_pool_empty": 30
   },
   "gold_decisions": {
-    "auto_match": 80,
+    "auto_match": 100,
     "no_match": 30
   }
 }

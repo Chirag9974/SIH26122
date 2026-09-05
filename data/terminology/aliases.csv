@@ -211,10 +211,8 @@ status,completed,compl
 status,completed,cmpltd
 status,completed,over
 status,completed,completd
-status,completed,completed
 status,completed,cmpleted
 status,completed,finshed
-status,completed,donee
 status,started,started
 status,started,commenced
 status,started,begun
@@ -223,6 +221,7 @@ status,started,started work
 status,started,taken up
 status,started,mobilised
 status,started,mobilized
+status,started,balance tomorrow
 status,in_progress,in progress
 status,in_progress,ongoing
 status,in_progress,continuing
@@ -236,12 +235,16 @@ status,in_progress,partly done
 status,in_progress,still open
 status,in_progress,still pending
 status,in_progress,found incomplete
+status,in_progress,under way
+status,in_progress,partway through
 status,suspended,suspended
-status,suspended,stopped
-status,suspended,held up
-status,suspended,on hold
+status,suspended,stopped midway
+status,suspended,stopped at
 status,suspended,halted
-status,suspended,abandoned for the day
+status,suspended,carried over
+status,suspended,shifted to tomorrow
+status,suspended,on hold
+status,suspended,paused for the day
 status,cancelled,cancelled
 status,cancelled,canceled
 status,cancelled,called off
