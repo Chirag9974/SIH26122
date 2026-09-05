@@ -1,11 +1,11 @@
 {
-  "split": "paired:test_set.jsonl",
-  "n_reports": 26,
+  "split": "regression:all",
+  "n_reports": 100,
   "relevance": {
     "precision": 1.0,
     "recall": 1.0,
     "f1": 1.0,
-    "tp": 21,
+    "tp": 95,
     "fp": 0,
     "fn": 0,
     "tn": 5
@@ -14,7 +14,7 @@
     "precision": 1.0,
     "recall": 1.0,
     "f1": 1.0,
-    "tp": 23,
+    "tp": 117,
     "fp": 0,
     "fn": 0
   },
@@ -33,33 +33,38 @@
   },
   "datetime_accuracy": {
     "start": 1.0,
-    "end": 1.0,
+    "end": 0.9915,
     "certainty": 1.0
   },
   "evidence_coverage": 1.0,
   "by_case_kind": {
-    "edge_ambiguous": {
+    "ambiguous": {
+      "tp": 10,
+      "fp": 0,
+      "fn": 0
+    },
+    "irrelevant_negative": {
       "tp": 5,
       "fp": 0,
       "fn": 0
     },
-    "edge_conflicting": {
-      "tp": 4,
+    "multi": {
+      "tp": 32,
       "fp": 0,
       "fn": 0
     },
-    "edge_negative": {
-      "tp": 5,
+    "noisy": {
+      "tp": 20,
       "fp": 0,
       "fn": 0
     },
-    "edge_noise": {
-      "tp": 7,
+    "normal": {
+      "tp": 40,
       "fp": 0,
       "fn": 0
     },
-    "edge_relative": {
-      "tp": 2,
+    "partial": {
+      "tp": 10,
       "fp": 0,
       "fn": 0
     }
@@ -69,11 +74,11 @@
     "candidate_recall_at_3": 0.0,
     "candidate_recall_at_5": 0.0,
     "candidate_recall_at_10": 0.0,
-    "total_matchable": 0,
-    "no_match_cases": 0,
+    "total_matchable": 107,
+    "no_match_cases": 10,
     "by_difficulty": {
       "easy": 0,
-      "medium": 0,
+      "medium": 107,
       "hard": 0
     }
   }

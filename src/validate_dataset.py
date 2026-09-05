@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -159,6 +160,9 @@ def main() -> None:
                 print(f"    {kk}: {vv}")
         else:
             print(f"  {k}: {v}")
+
+    if not result["valid"]:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

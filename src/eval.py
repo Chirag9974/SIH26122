@@ -67,16 +67,37 @@ def align(gold_events: list[dict], pred_events: list[dict]) -> list[tuple[dict |
     return pairs
 
 
-def run(split: str | None, n_errors: int) -> dict:
-    reports = {r["report_id"]: r for r in _jsonl(REPORTS)}
-    gold = {g["report_id"]: g for g in _jsonl(GOLD)}
-    matches_data = {m["event_id"]: m for m in _jsonl(MATCHES)}
+def run(split: str | None, n_errors: int, paired: Path | None = None,
+        data_dir: Path | None = None) -> dict:
+    if paired:
+        # paired file: one {report, gold} per line (edge cases / frozen test set)
+        rows = _jsonl(paired)
+        reports = {r["report"]["report_id"]: r["report"] for r in rows}
+        gold = {r["gold"]["report_id"]: r["gold"] for r in rows}
+        matches_data: dict = {}
+        ids = list(reports)
+    else:
+        base = data_dir or ROOT / "data"
+        reports_path = base / "raw_reports" / "reports.jsonl"
+        gold_path = base / "labels" / "gold_extractions.jsonl"
+        matches_path = base / "labels" / "gold_matches.jsonl"
+        splits_path = base / "evaluation" / "splits.json"
+        if data_dir:  # regression dir has flat layout
+            if not reports_path.exists():
+                reports_path = base / "reports.jsonl"
+                gold_path = base / "gold_extractions.jsonl"
+                matches_path = base / "gold_matches.jsonl"
+                splits_path = base / "splits.json"
+        reports = {r["report_id"]: r for r in _jsonl(reports_path)}
+        gold = {g["report_id"]: g for g in _jsonl(gold_path)}
+        matches_data = {m["event_id"]: m for m in _jsonl(matches_path)} \
+            if matches_path.exists() else {}
 
-    ids = sorted(reports)
-    if split:
-        if not SPLITS.exists():
-            raise SystemExit(f"no splits file: {SPLITS}")
-        ids = json.loads(SPLITS.read_text(encoding="utf-8"))[split]
+        ids = sorted(reports)
+        if split:
+            if not splits_path.exists():
+                raise SystemExit(f"no splits file: {splits_path}")
+            ids = json.loads(splits_path.read_text(encoding="utf-8"))[split]
 
     rel = Counter()
     ev = Counter()
@@ -205,12 +226,21 @@ def run(split: str | None, n_errors: int) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--split", choices=["train", "dev", "test", "test_hard"])
+    ap.add_argument("--split", choices=["train", "dev", "val", "test", "test_hard"])
+    ap.add_argument("--paired", type=Path,
+                    help="paired {report, gold} JSONL (edge cases); ignores --split")
+    ap.add_argument("--data-dir", type=Path,
+                    help="alternate data dir (e.g. ../data/regression)")
     ap.add_argument("--errors", type=int, default=10)
     ap.add_argument("--out", type=Path, default=METRICS_OUT)
     args = ap.parse_args()
 
-    m = run(args.split, args.errors)
+    m = run(None if args.paired else args.split, args.errors,
+            paired=args.paired, data_dir=args.data_dir)
+    if args.paired:
+        m["split"] = f"paired:{args.paired.name}"
+    elif args.data_dir:
+        m["split"] = f"{args.data_dir.name}:{m['split']}"
     errors = m.pop("_errors")
 
     print(f"=== extractor eval: split={m['split']}  reports={m['n_reports']} ===")
