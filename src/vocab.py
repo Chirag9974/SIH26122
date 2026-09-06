@@ -209,6 +209,7 @@ WARNINGS = [
     "uncertain_statement",
     "quantity_partial",
     "no_schedule_candidate",
+    "unsupported_evidence",
 ]
 
 # ---------------------------------------------------------------------------
