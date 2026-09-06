@@ -8,9 +8,11 @@ null. Every emitted warning stays inside the closed vocab.WARNINGS set.
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import re
 
 from schema import normalize_nested
-from vocab import ACTION_ALIASES, LOCATION_ALIASES, UNCERTAIN_CUES
+from vocab import (ACTION_ALIASES, LOCATION_ALIASES, UNCERTAIN_CUES,
+                   NEGATION_CUES, STATUS_CUES)
 from extractor import detect_relevance, IRRELEVANT_HINTS
 
 
@@ -52,6 +54,20 @@ _STATUS_WORDS = {
     "closed out", "all done", "wrapped up", "carried out", "executed",
     "performed", "held", "conducted", "delayed", "halted", "suspended",
 }
+
+# Pseudo-values the model occasionally writes into context.line_number;
+# never a real line number.
+_LINE_SENTINELS = {
+    "synced", "n/a", "na", "none", "same", "same as above",
+    "as above", "tbd", "-",
+}
+
+
+def _has_contrast(text: str) -> bool:
+    """True when the sentence contrasts two claims (complete-but-pending)."""
+    low = " ".join(str(text or "").lower().split())
+    return any(m in low for m in (" but ", "however", " although", " though",
+                                  "lekin"))
 
 
 def _canon_action(value):
@@ -130,11 +146,17 @@ def _repair_ts(s, rdate: str | None):
     if "T" in s2:
         date_part, _, time_part = s2.partition("T")
         bits = time_part.split(":")
-        if len(date_part) == 10 and len(bits) in (2, 3)                 and all(b.isdigit() for b in bits):
+        # Accept glued junk prefixes ("...-log24T11:30:00" from the model's
+        # bookkeeping): anything up to 16 chars before the T, as long as the
+        # clock part is clean. A valid ISO date is exactly 10 chars.
+        if (10 <= len(date_part) <= 16
+                and len(bits) in (2, 3)
+                and all(b.isdigit() for b in bits)):
+            date_iso = date_part[-10:]
             hh = min(int(bits[0]), 23)
             mm = int(bits[1])
             ss = int(bits[2]) if len(bits) == 3 else 0
-            return f"{date_part}T{hh:02d}:{mm:02d}:{ss:02d}", True
+            return f"{date_iso}T{hh:02d}:{mm:02d}:{ss:02d}", True
         return s, False
     bits = s2.split(":")
     if rdate and len(bits) in (2, 3) and all(b.isdigit() for b in bits):
@@ -200,6 +222,66 @@ def _evidence_span(raw: str, ev: dict):
     return None, "unsupported_evidence"
 
 
+def _sentence_actions(sent: str) -> set:
+    """Canonical work types named in one sentence (via alias tables)."""
+    return _text_actions(sent or "")
+
+
+def _segments(sent: str) -> list:
+    """Clause segments of a sentence (split on , ; and ' and ')."""
+    return [p.strip() for p in re.split(r"[;,]|\band\b", sent or "")
+            if p.strip()]
+
+
+def _segment_of(sent: str, seg: str) -> str:
+    """The clause segment of sent that contains seg (the evidence span)."""
+    low = (sent or "").lower()
+    segl = (seg or "").lower().strip()
+    pos = low.find(segl[:40]) if segl else -1
+    if pos < 0:
+        return sent or ""
+    start, end = 0, len(low)
+    for m in re.finditer(r"[;,]|\band\b", low):
+        if m.start() < pos:
+            start = m.end()
+        elif m.start() >= pos + len(segl[:40]):
+            end = m.start()
+            break
+    return sent[start:end].strip()
+
+
+def _incomplete_without_action(seg: str) -> bool:
+    """A clause reporting unfinished work WITHOUT naming an activity.
+
+    Such a clause contradicts a completed sibling event ("two joints were
+    found unfinished"); a clause that names its own activity ("grouting has
+    not started") is just another event, not a conflict.
+    """
+    low = (seg or "").lower()
+    cues = ("not done", "not completed", "unfinished", "incomplete",
+            "nahi", "partly", "partial")
+    return any(c in low for c in cues) and not _sentence_actions(low)
+
+
+def _sentence_containing(raw: str, seg: str):
+    """The sentence of raw that contains seg (evidence-anchored hedge probe).
+
+    Hedges often sit just outside the evidence span ("... from 4 PM appears
+    complete."), so uncertainty must be judged on the full sentence.
+    """
+    i = _locate(raw, seg)
+    if i is None:
+        return None
+    start = max(raw.rfind(".", 0, i), raw.rfind(";", 0, i),
+                raw.rfind("\n", 0, i)) + 1
+    end = len(raw)
+    for ch in (".", ";", "\n"):
+        j = raw.find(ch, i + len(seg.strip()))
+        if j >= 0:
+            end = min(end, j)
+    return raw[start:end]
+
+
 def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
     """Apply PDF section 10 checks. Returns (normalized prediction, issues).
 
@@ -218,9 +300,16 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
         rel["reason"] = rel.get("reason") or "events present in text"
         issues.append("relevance_false_with_events")
 
+    # Work types the text itself names (computed once; raw never changes).
+    _text_acts_seen = _text_actions(raw)
+
     for ev in events:
         flags = {w for w in ev.get("warnings", []) if isinstance(w, str)}
-        nr = bool(ev.get("needs_review", False))
+        # The model's self-flag is unreliable: it hedges plain facts and
+        # stamps needs_review on them (observed on qwen2.5:7b), while missing
+        # real gaps. The deterministic rules below are the sole authority on
+        # review flags (PDF sections 3 and 10).
+        nr = False
         exx, qty, tim = ev["execution"], ev["quantity"], ev["time"]
 
         # Evidence traceability: the claim must exist in the raw text.
@@ -232,12 +321,25 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
         else:
             ev["evidence"]["source_text"] = span
 
+        # Sentence probe for hedge/negation judgement: hedges often sit just
+        # outside the evidence span ("... from 4 PM appears complete."), so
+        # judge on the WHOLE sentence containing the evidence.
+        evd_span = (ev.get("evidence") or {}).get("source_text") or ""
+        sent = _sentence_containing(raw, evd_span) or evd_span
+        text_probe = " ".join(str(x) for x in (
+            sent,
+            (ev.get("activity") or {}).get("description")) if x)
+
         # Progress in 0-100 only (normalizer clamps; guard the residual).
         pct = exx["progress_percent"]
         if pct is not None and not (0 <= pct <= 100):
             exx["progress_percent"] = None
             nr = True
             issues.append("progress_out_of_range")
+        elif isinstance(pct, float):
+            exx["progress_percent"] = int(round(pct))
+            if not pct.is_integer():
+                issues.append("progress_rounded")
 
         # Quantity: non-negative; completed <= total when comparable.
         c, t = qty.get("completed"), qty.get("total")
@@ -284,16 +386,83 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
                     nr = True
                     issues.append("overnight_gap_too_large")
 
+        # Midnight-exact start with no textual support is a model placeholder
+        # ("Work started ..." -> 00:00). Drop unsupported midnight starts.
+        if (tim["start"] and tim["start"][11:16] == "00:00"
+                and not any(tok in text_probe.lower()
+                            for tok in ("midnight", "00:00", "0:00",
+                                        "24:00"))):
+            tim["start"] = None
+            tim["certainty"] = "missing"
+            flags.add("missing_time")
+            issues.append("unsupported_midnight_start_dropped")
+
         # Unsupported uncertainty: the model hedges although the text has no
         # hedge word. A clean claim stays affirmed (PDF: no invention).
-        text_probe = " ".join(str(x) for x in (
-            (ev.get("evidence") or {}).get("source_text"),
-            (ev.get("activity") or {}).get("description")) if x)
         if exx["assertion"] == "uncertain":
             low_probe = text_probe.lower()
-            if not any(cue in low_probe for cue in UNCERTAIN_CUES):
+            # Hedge words that qualify a DIFFERENT field ("around 16:30",
+            # "roughly 40 percent") do not make the STATUS uncertain.
+            field_hedged = any(c in low_probe and
+                               any(f in low_probe[max(0, low_probe.find(c) - 12):
+                                                  low_probe.find(c) + len(c) + 14]
+                                   for f in (":", "percent", "%", " m "))
+                               for c in UNCERTAIN_CUES if len(c) >= 3)
+            unc = (any(c in low_probe for c in UNCERTAIN_CUES if len(c) >= 3)
+                   and not field_hedged)
+            # Negation must sit right next to this event's own activity term
+            # ("termination nahi hua", "grouting has not started"). Cues next
+            # to other words refer to missing fields ("location not
+            # confirmed", "no start time was recorded", "confirm nahi kiya"),
+            # never to the activity itself.
+            act_terms = [w for w in
+                         ((ev["activity"].get("action") or "") + " " +
+                          (ev["activity"].get("description") or "")).lower().split()
+                         if len(w) >= 4 and w not in _STATUS_WORDS]
+            report_words = ("confirm", "record", "reported", "verified",
+                            "update", "information")
+            own_acts = _sentence_actions(
+                ((ev["activity"].get("action") or "") + " " +
+                 (ev["activity"].get("description") or "")).lower())
+            neg = False
+            for cue in NEGATION_CUES:
+                if len(cue) < 3:
+                    continue
+                j = low_probe.find(cue)
+                while j >= 0 and not neg:
+                    after = low_probe[j + len(cue):j + len(cue) + 16].lstrip()
+                    if not any(after.startswith(w) for w in report_words):
+                        before_toks = low_probe[:j].rstrip().split()
+                        window = before_toks[-3:]
+                        if any(t in act_terms for t in window):
+                            clause = low_probe[max(0, j - 80):j + len(cue) + 30]
+                            others = _sentence_actions(clause) - own_acts
+                            if not others:
+                                neg = True
+                    j = low_probe.find(cue, j + 1)
+                if neg:
+                    break
+            if neg and not unc:
+                # "nahi hua" / "was not ...": the model hedged a plainly
+                # negated claim; the text cue is evidence enough.
+                exx["assertion"] = "negated"
+                flags.add("negated_statement")
+                flags.discard("uncertain_statement")
+                issues.append("negation_recovered_from_text")
+            elif not unc and not neg and not _has_contrast(text_probe):
                 exx["assertion"] = "affirmed"
+                flags.discard("uncertain_statement")
                 issues.append("unsupported_uncertainty_downgraded")
+
+        # Negated + except-exclusion: "Everything is progressing normally
+        # except the loop checks" describes the EXCLUDED item, not a negated
+        # activity. Drop the meaningless assertion, keep the status, no
+        # review (the exclusion itself is stated plainly).
+        if (exx["assertion"] == "negated" and exx["status"] == "not_started"
+                and (" except " in sent.lower()
+                     or " other than " in sent.lower())):
+            exx["assertion"] = "affirmed"
+            issues.append("exception_exclusion_not_negation")
 
         # Negation can never stand next to a completion-like status.
         if exx["assertion"] == "negated" and exx["status"] in (
@@ -313,8 +482,60 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             exx["assertion"] = "uncertain"
         if exx["assertion"] == "uncertain":
             nr = True
+
+        # Fractional progress implies in_progress (a partial quantity cannot
+        # be a completed event); resolve status BEFORE conflict coherence so
+        # the check sees the final status.
+        if (exx["status"] is None
+                and ev["quantity"]["completed"] is not None
+                and ev["quantity"]["total"] is not None
+                and 0 < ev["quantity"]["completed"] < ev["quantity"]["total"]):
+            exx["status"] = "in_progress"
+            issues.append("status_inferred_from_partial_quantity")
+
+        # Status recovery: an explicit completion cue in the event's own
+        # CLAUSE with no contradicting cue ("have been completed") is
+        # evidence the model dropped. Whole-sentence probing would import
+        # sibling clauses' cues ("rack b pe 24 spool done, crew left at 4").
+        # Never applied to negated assertions (the cue there is the negated
+        # object, e.g. "not completed").
+        if (exx["status"] is None and exx["assertion"] != "negated"
+                and not _incomplete_without_action(sent)):
+            low_seg = _segment_of(sent, evd_span).lower()
+            blocked = any(c in low_seg for c in STATUS_CUES["not_started"]
+                          + STATUS_CUES["cancelled"] + STATUS_CUES["suspended"])
+            if not blocked:
+                for st in ("completed", "started", "in_progress"):
+                    if any(c in low_seg for c in STATUS_CUES[st]):
+                        exx["status"] = st
+                        issues.append("status_recovered_from_text")
+                        break
+
+        # Conflicting-report coherence: judge AFTER status resolution. A
+        # coherent assertion whose own evidence clause names at most this one
+        # activity - and whose sentence contains no activity-less unfinished
+        # clause ("two joints found unfinished") - cannot make the report
+        # "conflicting"; the model stamps the warning on its own hedging
+        # (observed on qwen2.5:7b).
         if "conflicting_report" in flags:
-            nr = True
+            ok_status = ((exx["assertion"] == "affirmed"
+                          and exx["status"] in ("completed", "started",
+                                                "in_progress"))
+                         or (exx["assertion"] == "negated"
+                             and exx["status"] == "not_started"))
+            seg_probe = _segment_of(sent, evd_span)
+            incomplete_bare = any(_incomplete_without_action(s)
+                                  for s in _segments(sent)
+                                  if s not in (evd_span or ""))
+            coherent = (ok_status
+                        and (len(events) <= 1
+                             or len(_sentence_actions(seg_probe)) <= 1)
+                        and not incomplete_bare)
+            if coherent:
+                flags.discard("conflicting_report")
+                issues.append("conflicting_report_rejected")
+            else:
+                nr = True
 
         # A relevant event with no resolvable status is unsafe to auto-accept.
         if exx["status"] is None:
@@ -334,6 +555,14 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             act_canon = _canon_action(ev["activity"].get("description"))
             if act_canon is not None:
                 issues.append("action_recovered_from_description")
+        # Swap guard (single-event docs only): a canonical action the text
+        # never mentions, while the text names exactly one other work type,
+        # means the model swapped them ("Painting work" -> concreting).
+        if (act_canon is not None and len(events) == 1
+                and _text_acts_seen and act_canon not in _text_acts_seen
+                and len(_text_acts_seen - {act_canon}) == 1):
+            act_canon = next(iter(_text_acts_seen - {act_canon}))
+            issues.append("action_swap_corrected_from_text")
         if act_canon is not None and act_canon != act_raw:
             ev["activity"]["action"] = act_canon
             issues.append("action_canonicalized")
@@ -342,10 +571,46 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             issues.append("action_unrecognized")
             nr = True
         if ev["activity"]["action"] is None:
-            sole = _sole_action_alias(raw)
+            sole = next(iter(_text_acts_seen)) if len(_text_acts_seen) == 1 else None
+            if sole is None:
+                # Alias tables verb-match; natural phrasing ("cable was
+                # pulled", "painting work") does not. Try token-to-alias
+                # containment as a last, still text-anchored resort.
+                toks = {t.strip(".,;:()!?") for t in raw.lower().split()}
+                toks.discard("")
+                cands = set()
+                for tok in toks:
+                    if len(tok) < 5 or tok in _STATUS_WORDS:
+                        continue
+                    for al, canon in _ALIAS_TO_ACTION.items():
+                        if len(al) >= 5 and (tok in al or al in tok):
+                            cands.add(canon)
+                if len(cands) == 1:
+                    sole = cands.pop()
             if sole is not None:
                 ev["activity"]["action"] = sole
                 issues.append("action_recovered_from_text")
+
+        # Pseudo-values are not line numbers ("synced" leaks from the
+        # model's cross-event bookkeeping) and neither is echoed prose
+        # ("in Line 18"). A real line id carries digits and is not a
+        # preposition phrase.
+        lnv = ev["context"].get("line_number")
+        if isinstance(lnv, str):
+            low_ln = lnv.strip().lower()
+            toks = low_ln.replace('"', ' ').split()
+            m_ln = re.fullmatch(r"[a-z]{2,6}(\d{1,3})", low_ln)
+            if m_ln:
+                # Glued junk with a real id ("log24" -> "24").
+                ev["context"]["line_number"] = m_ln.group(1)
+                issues.append("line_number_glued_recovered")
+            elif (low_ln in _LINE_SENTINELS
+                    or not any(ch.isdigit() for ch in low_ln)
+                    or (len(toks) > 1 and any(t in ("in", "on", "at", "the",
+                                                    "near", "log", "line")
+                                              for t in toks))):
+                ev["context"]["line_number"] = None
+                issues.append("line_number_sentinel_nulled")
 
         # Canonicalize location shorthand ("u-300" -> "Unit 300").
         loc_raw = ev["context"].get("location")
@@ -361,6 +626,16 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             if recovered is not None:
                 ev["context"]["location"] = recovered
                 issues.append("location_recovered_from_text")
+
+        # Line-number recovery: exactly one "Line NN" mention in the text is
+        # evidence for an empty context.line_number (same convention as the
+        # deterministic baseline: "Line 18" -> "18").
+        if ev["context"].get("line_number") is None:
+            lns = set(re.findall(r"\bline\s*(?:no\.?\s*)?(\d{1,3})(?:-\d+)?\b",
+                                 raw, re.I))
+            if len(lns) == 1:
+                ev["context"]["line_number"] = lns.pop()
+                issues.append("line_number_recovered_from_text")
 
         # Progress derivation per gold convention:
         #   completed + affirmed + no quantity -> 100
@@ -384,7 +659,12 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
     _rel = detect_relevance(raw)
     _text_acts = _text_actions(raw)
     _anchored = any(ev["activity"]["action"] in _text_acts for ev in events)
-    if not _rel["is_relevant"] and events and not _anchored:
+    _hint = next((h for h in IRRELEVANT_HINTS if h in raw.lower()), None)
+    if (not _rel["is_relevant"] and events and not _anchored
+            and _hint is not None):
+        # Only genuine site-logistics texts (an actual hint phrase present)
+        # may zero out events. Generic low-confidence relevance never does:
+        # work described without vocabulary aliases is still work.
         events = []
         rel["is_relevant"] = False
         rel["confidence"] = min(rel.get("confidence", 0.9), 0.95)

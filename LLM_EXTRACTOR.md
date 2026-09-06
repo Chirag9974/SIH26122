@@ -120,20 +120,39 @@ Between the raw generation and the final JSON, the validator deterministically
 repairs or flags:
 
 - **Timestamp resolution**: bare clock times ("08:00") resolve onto the
-  report date (`relative_date_resolved`); unparseable times are nulled + review
+  report date (`relative_date_resolved`); unparseable times are nulled + review;
+  glued junk timestamps ("...-log24T11:30:00") are salvaged when the clock part
+  is clean; unsupported midnight-exact starts (a model placeholder) are dropped
 - **Overnight rollover**: end < start rolls the end to the next day (capped at
   a 1-day gap; larger gaps are unsafe and nulled)
 - **Action canonicalization**: status words ("done") are rejected; alias
   paraphrases map to canonical work types via `vocab.ACTION_ALIASES`;
-  unrecognized actions fall back to the description, else null + review
-- **Location canonicalization + recovery**: shorthand maps to canonical names
-  ("u-300" -> "Unit 300"); an omitted location is recovered only when exactly
-  one known location occurs in the text
+  unrecognized actions fall back to the description, else null + review;
+  a canonical action the text never names is swapped for the one it does
+  (single-event docs)
+- **Location + line-number canonicalization/recovery**: shorthand maps to
+  canonical names ("u-300" -> "Unit 300"); glued ids ("log24" -> "24"); an
+  omitted location/line is recovered only when exactly one occurs in the text;
+  pseudo-values ("synced", "in Line 18") are nulled
 - **Progress derivation** (gold conventions): completed+affirmed -> 100;
   quantity present -> round(completed/total*100); quantity with completed >
   total is nulled + review
-- **Negation/uncertainty guards**: negation never coexists with a completion
-  status; uncertainty always sets needs_review
+- **Status inference/recovery**: partial quantity implies in_progress; a
+  status-cue verb in the event's own clause ("have been completed", "started
+  another spool") recovers a dropped status - clause-scoped so sibling
+  clauses' cues do not leak in
+- **Assertion repair** (hedge/negation judgement): hedging a clean fact is
+  downgraded to affirmed; hedged-field scopes ("around 16:30") do not make the
+  status uncertain; a real hedge in the sentence keeps uncertain + review;
+  negation is asserted only when a cue sits within 3 tokens of the event's own
+  activity term and not next to a reporting verb ("confirm nahi kiya" negates
+  the report, not the work); "X except Y" exclusions are not negations
+- **Conflicting-report coherence**: the model stamps `conflicting_report` on
+  its own hedging; the validator rejects the warning when the final assertion
+  is coherent, the event's clause names at most one activity, and the sentence
+  contains no activity-less unfinished-work clause ("two joints unfinished")
+- **Review flags are deterministic**: the model's self-declared
+  needs_review is discarded; the validator's rules are the sole authority
 
 ## Safety properties
 
@@ -141,7 +160,8 @@ repairs or flags:
   when a status can't be resolved)
 - Negation never becomes completion (validator nulls status/progress on
   `assertion=negated` + completion status)
-- Uncertainty stays `uncertain` and always sets `needs_review=true`
+- Uncertainty stays `uncertain` and always sets `needs_review=true` (and a
+  hedge in the text always survives the downgrade repair)
 - Evidence must exist in the raw report text; else `unsupported_evidence`
   warning + review (closed warning vocabulary in `vocab.py`)
 - The extractor never emits `schedule_activity_id` and never sees gold labels

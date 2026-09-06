@@ -244,8 +244,21 @@ def extract_report(report_text: str, metadata: dict | None = None,
     if not out.get("_meta", {}).get("fallback", False):
         meta = dict(out["_meta"])
         meta["engine"] = "llm"
-        out["_meta"] = meta
-        return out
+        # Stable top-level contract (see docstring): document-level review
+        # flag and the union of event-level warnings, inside the closed
+        # vocab.WARNINGS vocabulary.
+        from vocab import WARNINGS
+        allowed = set(WARNINGS)
+        all_warnings = sorted({w for ev in out.get("events", [])
+                               for w in (ev.get("warnings") or [])
+                               if w in allowed})
+        return {"document": out["document"],
+                "relevance": out["relevance"],
+                "events": out["events"],
+                "needs_review": any(ev.get("needs_review")
+                                    for ev in out.get("events", [])),
+                "warnings": all_warnings,
+                "_meta": meta}
 
     # 2) LLM failed -> deterministic baseline fills the frozen shape.
     from extractor import extract as baseline_extract

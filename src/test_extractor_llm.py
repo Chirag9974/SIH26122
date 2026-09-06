@@ -124,12 +124,21 @@ def test_negation_never_completion():
 
 
 def test_uncertainty_needs_review():
+    # Real hedge in the text: the review flag must survive (model hedging a
+    # genuinely uncertain sentence is correct behavior).
     g = good_generation()
     g["events"][0]["execution"]["assertion"] = "uncertain"
     g["events"][0]["warnings"] = ["uncertain_statement"]
-    out = extract(REPORT, model="mock", use_cache=False,
+    g["events"][0]["evidence"]["source_text"] = (
+        "erection of 24in spool Line 24 at Rack B from 10 AM to 4 PM")
+    hedged = {"report_id": "T-1", "source_type": "daily_report",
+              "report_date": "2026-09-01", "discipline": "Piping",
+              "raw_text": "Piping crew says erection of 24in spool Line 24 "
+                          "at Rack B from 10 AM to 4 PM appears complete."}
+    out = extract(hedged, model="mock", use_cache=False,
                   client=make_client(g))
     assert out["events"][0]["needs_review"] is True
+    assert out["events"][0]["execution"]["assertion"] == "uncertain"
 
 
 def test_relevance_false_no_events():
@@ -306,9 +315,26 @@ def test_missing_fields_stay_null():
                   client=make_client(g))
     ev = out["events"][0]
     assert ev["context"]["location"] is not None  # sole location recovered
+    assert ev["context"]["line_number"] is not None  # sole "Line NN" recovered
     assert ev["quantity"] == {"completed": None, "total": None,
                               "unit": None}
-    assert ev["needs_review"] is True  # unresolvable status -> review
+    # Status IS resolvable from the text's completion cue -> recovered,
+    # not invented (deterministic evidence-backed repair).
+    assert ev["execution"]["status"] == "completed"
+    assert ev["needs_review"] is False
+
+    # A status the text cannot resolve still forces review.
+    g2 = good_generation()
+    g2["events"][0]["execution"]["status"] = None
+    g2["events"][0]["evidence"]["source_text"] = "24in spool Line 24 at Rack B"
+    plain = {"report_id": "T-2", "source_type": "daily_report",
+             "report_date": "2026-09-01", "discipline": "Piping",
+             "raw_text": "Piping crew worked on the 24in spool Line 24 "
+                         "at Rack B from 10 AM to 4 PM."}
+    out2 = extract(plain, model="mock", use_cache=False,
+                   client=make_client(g2))
+    assert out2["events"][0]["execution"]["status"] is None
+    assert out2["events"][0]["needs_review"] is True
 
 
 def test_retry_once_then_safe_result():

@@ -190,11 +190,9 @@ STATUS_CUES = {
 }
 
 NEGATION_CUES = ["not ", "no ", "did not", "didn't", "could not", "couldn't", "never",
-                 "without", "cancelled", "canceled", "nil ", "failed to"]
-
+                 "without", "cancelled", "canceled", "nil ", "failed to", "nahi"]
 UNCERTAIN_CUES = ["may have", "might", "probably", "possibly", "seems", "appears",
-                  "reportedly", "unclear", "to be confirmed", "tbc", "approx", "around",
-                  "about", "likely", "as per verbal"]
+                  "reportedly", "unclear", "to be confirmed", "tbc", "approx", "around", "about", "roughly", "likely", "as per verbal"]
 
 # warnings vocabulary (closed set)
 WARNINGS = [
