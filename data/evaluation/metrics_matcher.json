@@ -1,0 +1,457 @@
+{
+  "summary": {
+    "n": 1161,
+    "recall@1": 0.5473,
+    "recall@3": 0.8948,
+    "recall@5": 0.9726,
+    "final_match_accuracy": 0.3566,
+    "decision_accuracy": 0.3781,
+    "auto_precision": 0.9314,
+    "auto_recall": 0.55,
+    "no_match_accuracy": 1.0,
+    "no_match_n": 30,
+    "human_review_recall": 0.75,
+    "human_review_n": 60,
+    "confusion": {
+      "auto_match->auto_match": 364,
+      "auto_match->human_review": 700,
+      "auto_match->no_match": 7,
+      "human_review->auto_match": 15,
+      "human_review->human_review": 45,
+      "no_match->no_match": 30
+    }
+  },
+  "failures": [
+    {
+      "event_id": "REP-0002-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "PIP-L6-0024",
+      "pred_id": "PIP-L6-0028",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "PIP-L6-0028",
+          "score": 0.931,
+          "name": "Hydrotest Line 16-01 at Pipe Rack North"
+        },
+        {
+          "id": "PIP-L6-0005",
+          "score": 0.931,
+          "name": "Hydrotest Line 40-08 at Pipe Rack North"
+        },
+        {
+          "id": "PIP-L6-0023",
+          "score": 0.897,
+          "name": "Hydrotest Line 10-07 - Part 1 at Pipe Rack North"
+        }
+      ],
+      "signals": {
+        "semantic": 0.934,
+        "lexical": 0.923,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0004-EVT-02",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "PIP-L6-0058",
+      "pred_id": "PIP-L6-0058",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "PIP-L6-0058",
+          "score": 0.812,
+          "name": "Weld 8in Joints Line 30-08 - Part 1 at Rack A"
+        },
+        {
+          "id": "PIP-L6-0059",
+          "score": 0.812,
+          "name": "Weld 8in Joints Line 30-08 - Part 2 at Rack A"
+        },
+        {
+          "id": "PIP-L6-0060",
+          "score": 0.811,
+          "name": "Weld 8in Joints Line 30-08 - Part 3 at Rack A"
+        }
+      ],
+      "signals": {
+        "semantic": 0.842,
+        "lexical": 0.556,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0005-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "EQP-L6-0020",
+      "pred_id": "EQP-L6-0021",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "EQP-L6-0021",
+          "score": 0.805,
+          "name": "Install Pump FT-346 - Part 2 at Compressor House"
+        },
+        {
+          "id": "EQP-L6-0020",
+          "score": 0.795,
+          "name": "Install Pump FT-346 - Part 1 at Compressor House"
+        },
+        {
+          "id": "EQP-L6-0044",
+          "score": 0.608,
+          "name": "Align Pump LT-455 at Compressor House"
+        }
+      ],
+      "signals": {
+        "semantic": 0.821,
+        "lexical": 0.571,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0008-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "STR-L6-0033",
+      "pred_id": "STR-L6-0033",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "STR-L6-0033",
+          "score": 0.828,
+          "name": "Install Grating Platform F-387 at Area 20"
+        },
+        {
+          "id": "STR-L6-0002",
+          "score": 0.799,
+          "name": "Install Grating Platform F-177 at Area 20"
+        },
+        {
+          "id": "STR-L6-0006",
+          "score": 0.514,
+          "name": "Install Grating Platform F-455 at Unit 200"
+        }
+      ],
+      "signals": {
+        "semantic": 0.83,
+        "lexical": 0.667,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0009-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "ELE-L6-0036",
+      "pred_id": "ELE-L6-0036",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "ELE-L6-0036",
+          "score": 0.523,
+          "name": "Install Earthing Grid E-08 at MCC Room"
+        },
+        {
+          "id": "ELE-L6-0010",
+          "score": 0.511,
+          "name": "Install Earthing Grid E-01 - Part 3 at MCC Room"
+        },
+        {
+          "id": "ELE-L6-0009",
+          "score": 0.509,
+          "name": "Install Earthing Grid E-01 - Part 2 at MCC Room"
+        }
+      ],
+      "signals": {
+        "semantic": 0.587,
+        "lexical": 0.5,
+        "action": 0.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0012-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "INS-L6-0047",
+      "pred_id": "INS-L6-0036",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "INS-L6-0036",
+          "score": 0.868,
+          "name": "Install Transmitter P-267 at Unit 300"
+        },
+        {
+          "id": "INS-L6-0047",
+          "score": 0.855,
+          "name": "Install Transmitter FT-180 at Unit 300"
+        },
+        {
+          "id": "INS-L6-0010",
+          "score": 0.609,
+          "name": "Install Transmitter V-183 at Unit 200"
+        }
+      ],
+      "signals": {
+        "semantic": 0.885,
+        "lexical": 0.727,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0013-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "PIP-L6-0007",
+      "pred_id": "PIP-L6-0007",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "PIP-L6-0007",
+          "score": 0.916,
+          "name": "Fit-up 24in Spool Line 32-05 at Unit 200"
+        },
+        {
+          "id": "PIP-L6-0056",
+          "score": 0.911,
+          "name": "Fit-up 24in Spool Line 30-07 at Unit 200"
+        },
+        {
+          "id": "PIP-L6-0032",
+          "score": 0.856,
+          "name": "Fit-up 12in Spool Line 30-07 at Unit 200"
+        }
+      ],
+      "signals": {
+        "semantic": 0.93,
+        "lexical": 0.857,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0016-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "INS-L6-0017",
+      "pred_id": "INS-L6-0014",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "INS-L6-0014",
+          "score": 0.842,
+          "name": "Calibrate Instrument V-119 at Wellhead Pad 2"
+        },
+        {
+          "id": "INS-L6-0017",
+          "score": 0.814,
+          "name": "Calibrate Instrument TK-199 - Part 2 at Wellhead Pad 2"
+        },
+        {
+          "id": "INS-L6-0016",
+          "score": 0.802,
+          "name": "Calibrate Instrument TK-199 - Part 1 at Wellhead Pad 2"
+        }
+      ],
+      "signals": {
+        "semantic": 0.857,
+        "lexical": 0.667,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0020-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "no_match",
+      "gold_id": "CIV-L6-0041",
+      "pred_id": null,
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "CIV-L6-0002",
+          "score": 0.401,
+          "name": "Shutter Foundation F-164 - Part 1 at Area 20"
+        },
+        {
+          "id": "CIV-L6-0003",
+          "score": 0.399,
+          "name": "Shutter Foundation F-164 - Part 2 at Area 20"
+        },
+        {
+          "id": "CIV-L6-0040",
+          "score": 0.397,
+          "name": "Shutter Foundation F-488 at Area 10"
+        }
+      ],
+      "signals": {
+        "semantic": 0.423,
+        "lexical": 0.0,
+        "action": 1.0,
+        "location": 0.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true
+      }
+    },
+    {
+      "event_id": "REP-0021-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "EQP-L6-0027",
+      "pred_id": "EQP-L6-0027",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "EQP-L6-0027",
+          "score": 0.788,
+          "name": "Grout Baseplate FT-200 at Area 10"
+        },
+        {
+          "id": "EQP-L6-0011",
+          "score": 0.769,
+          "name": "Grout Baseplate P-492 at Area 10"
+        },
+        {
+          "id": "EQP-L6-0008",
+          "score": 0.766,
+          "name": "Grout Baseplate P-230 at Area 10"
+        }
+      ],
+      "signals": {
+        "semantic": 0.777,
+        "lexical": 0.6,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0025-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "ELE-L6-0012",
+      "pred_id": "ELE-L6-0014",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "ELE-L6-0014",
+          "score": 0.752,
+          "name": "Install Lighting Panel P-186 - Part 3 at Unit 300"
+        },
+        {
+          "id": "ELE-L6-0013",
+          "score": 0.749,
+          "name": "Install Lighting Panel P-186 - Part 2 at Unit 300"
+        },
+        {
+          "id": "ELE-L6-0012",
+          "score": 0.746,
+          "name": "Install Lighting Panel P-186 - Part 1 at Unit 300"
+        }
+      ],
+      "signals": {
+        "semantic": 0.73,
+        "lexical": 0.533,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    },
+    {
+      "event_id": "REP-0027-EVT-01",
+      "gold_decision": "auto_match",
+      "pred_decision": "human_review",
+      "gold_id": "INS-L6-0014",
+      "pred_id": "INS-L6-0014",
+      "reason": "correct_match",
+      "top_candidates": [
+        {
+          "id": "INS-L6-0014",
+          "score": 0.842,
+          "name": "Calibrate Instrument V-119 at Wellhead Pad 2"
+        },
+        {
+          "id": "INS-L6-0017",
+          "score": 0.814,
+          "name": "Calibrate Instrument TK-199 - Part 2 at Wellhead Pad 2"
+        },
+        {
+          "id": "INS-L6-0016",
+          "score": 0.802,
+          "name": "Calibrate Instrument TK-199 - Part 1 at Wellhead Pad 2"
+        }
+      ],
+      "signals": {
+        "semantic": 0.857,
+        "lexical": 0.667,
+        "action": 1.0,
+        "location": 1.0,
+        "discipline": 1.0,
+        "line": 0.0,
+        "equipment": 0.0,
+        "L6": true,
+        "loc_bonus": 0.04
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@ and progress to stdout. Resumable: cached calls return instantly.
 import sys, json, time
 
 sys.path.insert(0, "src")
-from extractor_llm import extract_report
+from extraction.extractor_llm import extract_report
 
 REPORT_DATE = "2026-09-06"  # fixed so "today"/"yesterday" resolve deterministically
 
