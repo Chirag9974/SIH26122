@@ -32,6 +32,26 @@ Fallbacks are never cached — a re-run retries them.
 | `src/error_analysis.py` | PDF section 13 failure taxonomy + recommendations |
 | `src/test_extractor_llm.py` | Offline invariants (mocked LLM, no server needed) |
 
+## Stable API (MVP)
+
+```python
+import sys
+sys.path.insert(0, "src")
+from extractor_llm import extract_report
+
+out = extract_report(
+    "Aaj welding kaam Rack A pe ho gaya 08:00 se 16:00 tak.",
+    metadata={"report_date": "2026-09-01", "discipline": None},
+)
+# -> frozen extraction JSON; out["_meta"]["engine"] is "llm" or "baseline"
+```
+
+Chain: LLM structured output -> Pydantic -> deterministic validators. If the
+LLM fails validation it retries **once**; if it still fails (or Ollama is
+down), the deterministic baseline extractor (`src/extractor.py`) fills the
+same frozen shape with `needs_review=true` and a `baseline_fallback` warning.
+The API never raises to the caller.
+
 ## Run
 
 ```bash
@@ -52,7 +72,17 @@ python src/eval_extractor.py --split dev
 
 # 5. error analysis over the result
 python src/error_analysis.py data/evaluation/metrics_llm_dev.json
+
+# 6. re-score from cache without new LLM calls (after validator/prompt fixes)
+python src/eval_extractor.py --split dev --no-cache   # NOT this one;
+# use the rescore script instead (cache-only, seconds):
+python src/rescore_dev.py
 ```
+
+**Re-scoring note:** validator and prompt fixes do not invalidate the
+generation cache (the same report still maps to the same raw LLM output);
+only the post-processing changes. `rescore_dev.py` replays the cache through
+the current validators and rewrites `metrics_llm_dev.json` in seconds.
 
 Other splits: `--split train|test|test_hard`, or `--paired
 data/evaluation/test_set.jsonl` for the hand-written edge cases. Force fresh

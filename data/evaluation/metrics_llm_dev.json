@@ -1,0 +1,1623 @@
+{
+  "split": "dev (rescored from cache)",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "n_reports": 178,
+  "n_pending": 0,
+  "rescore_seconds": 1.2,
+  "relevance": {
+    "precision": 0.9938,
+    "recall": 0.9699,
+    "f1": 0.9817,
+    "tp": 161,
+    "fp": 1,
+    "fn": 5,
+    "tn": 11
+  },
+  "event_detection": {
+    "precision": 0.8309,
+    "recall": 0.8431,
+    "f1": 0.837,
+    "tp": 172,
+    "fp": 35,
+    "fn": 32
+  },
+  "field_accuracy": {
+    "activity.action": 1.0,
+    "context.equipment": 0.7616,
+    "context.line_number": 0.9186,
+    "context.location": 0.9709,
+    "execution.progress_percent": 0.6512,
+    "execution.status": 0.8372,
+    "quantity.completed": 0.9012,
+    "quantity.total": 0.9244,
+    "time.end": 0.686,
+    "time.start": 0.7151
+  },
+  "unsafe_extraction": {
+    "count": 59,
+    "rate_per_matched_event": 0.343,
+    "by_field": {
+      "context.equipment": 25,
+      "context.line_number": 8,
+      "context.location": 2,
+      "execution.progress_percent": 2,
+      "quantity.completed": 7,
+      "quantity.total": 3,
+      "time.end": 12
+    }
+  },
+  "needs_review": {
+    "recall": 0.1429,
+    "specificity": 0.6121
+  },
+  "evidence_coverage": 1.0,
+  "fallback_reports": 0,
+  "case_type_metrics": {
+    "ambiguous": {
+      "n_events": 12,
+      "event_prf": {
+        "precision": 0.8333,
+        "recall": 0.8333,
+        "f1": 0.8333,
+        "tp": 10,
+        "fp": 2,
+        "fn": 2
+      }
+    },
+    "conflict": {
+      "n_events": 8,
+      "event_prf": {
+        "precision": 0.5385,
+        "recall": 0.875,
+        "f1": 0.6667,
+        "tp": 7,
+        "fp": 6,
+        "fn": 1
+      }
+    },
+    "multi": {
+      "n_events": 58,
+      "event_prf": {
+        "precision": 0.8621,
+        "recall": 0.8621,
+        "f1": 0.8621,
+        "tp": 50,
+        "fp": 8,
+        "fn": 8
+      }
+    },
+    "negative": {
+      "n_events": 12,
+      "event_prf": {
+        "precision": 0.9167,
+        "recall": 0.9167,
+        "f1": 0.9167,
+        "tp": 11,
+        "fp": 1,
+        "fn": 1
+      }
+    },
+    "noisy": {
+      "n_events": 26,
+      "event_prf": {
+        "precision": 0.8846,
+        "recall": 0.8846,
+        "f1": 0.8846,
+        "tp": 23,
+        "fp": 3,
+        "fn": 3
+      }
+    },
+    "normal_formal": {
+      "n_events": 36,
+      "event_prf": {
+        "precision": 0.7895,
+        "recall": 0.8333,
+        "f1": 0.8108,
+        "tp": 30,
+        "fp": 8,
+        "fn": 6
+      }
+    },
+    "normal_shorthand": {
+      "n_events": 24,
+      "event_prf": {
+        "precision": 0.8421,
+        "recall": 0.6667,
+        "f1": 0.7442,
+        "tp": 16,
+        "fp": 3,
+        "fn": 8
+      }
+    },
+    "partial": {
+      "n_events": 20,
+      "event_prf": {
+        "precision": 0.85,
+        "recall": 0.85,
+        "f1": 0.85,
+        "tp": 17,
+        "fp": 3,
+        "fn": 3
+      }
+    },
+    "suspended": {
+      "n_events": 8,
+      "event_prf": {
+        "precision": 0.8889,
+        "recall": 1.0,
+        "f1": 0.9412,
+        "tp": 8,
+        "fp": 1,
+        "fn": 0
+      }
+    }
+  },
+  "field_errors_by_kind": {
+    "context.equipment:conflict": 1,
+    "context.equipment:multi": 7,
+    "context.equipment:negative": 1,
+    "context.equipment:noisy": 4,
+    "context.equipment:normal_formal": 12,
+    "context.equipment:normal_shorthand": 7,
+    "context.equipment:partial": 7,
+    "context.equipment:suspended": 2,
+    "context.line_number:noisy": 2,
+    "context.line_number:normal_formal": 5,
+    "context.line_number:normal_shorthand": 2,
+    "context.line_number:partial": 5,
+    "context.location:conflict": 1,
+    "context.location:noisy": 3,
+    "context.location:normal_formal": 1,
+    "execution.progress_percent:ambiguous": 4,
+    "execution.progress_percent:conflict": 7,
+    "execution.progress_percent:multi": 6,
+    "execution.progress_percent:noisy": 18,
+    "execution.progress_percent:normal_formal": 11,
+    "execution.progress_percent:normal_shorthand": 11,
+    "execution.progress_percent:partial": 3,
+    "execution.status:conflict": 7,
+    "execution.status:multi": 10,
+    "execution.status:noisy": 2,
+    "execution.status:partial": 2,
+    "execution.status:suspended": 7,
+    "quantity.completed:conflict": 7,
+    "quantity.completed:multi": 1,
+    "quantity.completed:noisy": 3,
+    "quantity.completed:normal_formal": 3,
+    "quantity.completed:partial": 3,
+    "quantity.total:conflict": 7,
+    "quantity.total:multi": 1,
+    "quantity.total:noisy": 2,
+    "quantity.total:partial": 3,
+    "time.end:ambiguous": 1,
+    "time.end:multi": 21,
+    "time.end:noisy": 5,
+    "time.end:normal_formal": 11,
+    "time.end:normal_shorthand": 6,
+    "time.end:partial": 5,
+    "time.end:suspended": 5,
+    "time.start:ambiguous": 1,
+    "time.start:multi": 6,
+    "time.start:noisy": 7,
+    "time.start:normal_formal": 12,
+    "time.start:normal_shorthand": 10,
+    "time.start:partial": 6,
+    "time.start:suspended": 7
+  },
+  "event_miss_by_kind": {
+    "ambiguous": {
+      "fn": 2,
+      "fp": 2
+    },
+    "conflict": {
+      "fn": 1,
+      "fp": 6
+    },
+    "multi": {
+      "fn": 8,
+      "fp": 8
+    },
+    "negative": {
+      "fn": 1,
+      "fp": 1
+    },
+    "noisy": {
+      "fn": 3,
+      "fp": 3
+    },
+    "normal_formal": {
+      "fn": 6,
+      "fp": 8
+    },
+    "normal_shorthand": {
+      "fn": 8,
+      "fp": 3
+    },
+    "partial": {
+      "fn": 3,
+      "fp": 3
+    },
+    "suspended": {
+      "fn": 0,
+      "fp": 1
+    }
+  },
+  "n_error_examples": 348,
+  "error_examples": [
+    {
+      "report_id": "REP-0006",
+      "kind": "normal_shorthand",
+      "issue": "field_mismatch",
+      "field": "execution.progress_percent",
+      "gold": 100,
+      "pred": null,
+      "text": "CIV - concreting of concrete pourF-113 @ u-100, 0800-1200, done."
+    },
+    {
+      "report_id": "REP-0020",
+      "kind": "noisy",
+      "issue": "event_missed",
+      "field": null,
+      "gold": "shuttering",
+      "pred": null,
+      "text": "shuttering at completd."
+    },
+    {
+      "report_id": "REP-0020",
+      "kind": "noisy",
+      "issue": "event_extra",
+      "field": null,
+      "gold": null,
+      "pred": "erection",
+      "text": "shuttering at completd."
+    },
+    {
+      "report_id": "REP-0028",
+      "kind": "ambiguous",
+      "issue": "field_mismatch",
+      "field": "execution.progress_percent",
+      "gold": 100,
+      "pred": null,
+      "text": "Alignment completed at Compressor House."
+    },
+    {
+      "report_id": "REP-0029",
+      "kind": "normal_formal",
+      "issue": "field_mismatch",
+      "field": "execution.progress_percent",
+      "gold": 100,
+      "pred": null,
+      "text": "Cable pulling C-175: all done at Substation 1 10 to 3. Cable crew on site."
+    },
+    {
+      "report_id": "REP-0029",
+      "kind": "normal_formal",
+      "issue": "field_mismatch",
+      "field": "time.start",
+      "gold": "2026-09-24T10:00:00",
+      "pred": null,
+      "text": "Cable pulling C-175: all done at Substation 1 10 to 3. Cable crew on site."
+    },
+    {
+      "report_id": "REP-0029",
+      "kind": "normal_formal",
+      "issue": "field_mismatch",
+      "field": "time.end",
+      "gold": "2026-09-24T15:00:00",
+      "pred": null,
+      "text": "Cable pulling C-175: all done at Substation 1 10 to 3. Cable crew on site."
+    },
+    {
+      "report_id": "REP-0029",
+      "kind": "normal_formal",
+      "issue": "field_mismatch",
+      "field": "context.equipment",
+      "gold": "C-175",
+      "pred": null,
+      "text": "Cable pulling C-175: all done at Substation 1 10 to 3. Cable crew on site."
+    },
+    {
+      "report_id": "REP-0035",
+      "kind": "partial",
+      "issue": "field_mismatch",
+      "field": "time.start",
+      "gold": "2026-10-12T10:00:00",
+      "pred": null,
+      "text": "Started Panel installation  at u-300 1000-1500. 121 of 132 m completed today."
+    },
+    {
+      "report_id": "REP-0035",
+      "kind": "partial",
+      "issue": "field_mismatch",
+      "field": "time.end",
+      "gold": "2026-10-12T15:00:00",
+      "pred": null,
+      "text": "Started Panel installation  at u-300 1000-1500. 121 of 132 m completed today."
+    },
+    {
+      "report_id": "REP-0046",
+      "kind": "normal_shorthand",
+      "issue": "field_mismatch",
+      "field": "execution.progress_percent",
+      "gold": 100,
+      "pred": null,
+      "text": "INS - transmitter installationV-183 @ unit 200, from 09:00 to 16:00, done."
+    },
+    {
+      "report_id": "REP-0046",
+      "kind": "normal_shorthand",
+      "issue": "field_mismatch",
+      "field": "time.start",
+      "gold": "2026-10-26T09:00:00",
+      "pred": null,
+      "text": "INS - transmitter installationV-183 @ unit 200, from 09:00 to 16:00, done."
+    },
+    {
+      "report_id": "REP-0046",
+      "kind": "normal_shorthand",
+      "issue": "field_mismatch",
+      "field": "context.equipment",
+      "gold": "V-183",
+      "pred": null,
+      "text": "INS - transmitter installationV-183 @ unit 200, from 09:00 to 16:00, done."
+    },
+    {
+      "report_id": "REP-0061",
+      "kind": "ambiguous",
+      "issue": "field_mismatch",
+      "field": "execution.progress_percent",
+      "gold": 100,
+      "pred": null,
+      "text": "Welding of 6in joints completed at Rack A."
+    }
+  ],
+  "per_report": [
+    {
+      "report_id": "REP-0006",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0017",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0019",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0020",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0028",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0029",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0035",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0046",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0050",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0059",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0061",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0069",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0079",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0085",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0098",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0116",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0118",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0123",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0124",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0132",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0133",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0135",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0145",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0149",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0154",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0165",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0170",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0171",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0172",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0173",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 4,
+      "events_gold": 4
+    },
+    {
+      "report_id": "REP-0188",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0195",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0196",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0205",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0206",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0214",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0224",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0225",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0229",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0234",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0237",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0245",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0247",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0263",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0281",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 4,
+      "events_gold": 4
+    },
+    {
+      "report_id": "REP-0286",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0288",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0309",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0313",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0325",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0347",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0365",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0366",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0369",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0373",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0379",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0380",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0381",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0384",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0385",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0387",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0391",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 4,
+      "events_gold": 4
+    },
+    {
+      "report_id": "REP-0392",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0395",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0402",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0407",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0411",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0422",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 4,
+      "events_gold": 4
+    },
+    {
+      "report_id": "REP-0455",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0457",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0460",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0464",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0469",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0472",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0481",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0487",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0488",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0490",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0494",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0499",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0501",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0511",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-0512",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0526",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0528",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0529",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0532",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0534",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0539",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0540",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0555",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0561",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0562",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0563",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0567",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0568",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0574",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0583",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0588",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0592",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0605",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0606",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0610",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0617",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0633",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0634",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0635",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0638",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0639",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0643",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0648",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0661",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0662",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0667",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0676",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0684",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0687",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0688",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0695",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0702",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0703",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0706",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0716",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0717",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0719",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0732",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0733",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0737",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0738",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0740",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0743",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0745",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0748",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0751",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0758",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0773",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0789",
+      "case_kind": "partial",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0791",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0814",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0816",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0818",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0820",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0822",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0825",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0826",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0844",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0846",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0850",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0851",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0854",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0860",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0861",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0877",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0882",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0887",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0897",
+      "case_kind": "conflict",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0900",
+      "case_kind": "ambiguous",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0901",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0903",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0904",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0915",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0917",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0919",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0927",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0933",
+      "case_kind": "noisy",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0935",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0942",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0943",
+      "case_kind": "suspended",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0952",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0957",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0960",
+      "case_kind": "negative",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0978",
+      "case_kind": "normal_formal",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0980",
+      "case_kind": "irrelevant",
+      "fallback": false,
+      "events_pred": 0,
+      "events_gold": 0
+    },
+    {
+      "report_id": "REP-0988",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-0990",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 3,
+      "events_gold": 3
+    },
+    {
+      "report_id": "REP-0998",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 2,
+      "events_gold": 2
+    },
+    {
+      "report_id": "REP-1001",
+      "case_kind": "normal_shorthand",
+      "fallback": false,
+      "events_pred": 1,
+      "events_gold": 1
+    },
+    {
+      "report_id": "REP-1007",
+      "case_kind": "multi",
+      "fallback": false,
+      "events_pred": 4,
+      "events_gold": 4
+    }
+  ]
+}

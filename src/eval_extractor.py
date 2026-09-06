@@ -55,9 +55,10 @@ def _eq_num(a, b) -> bool:
     return a == b
 
 
-def evaluate(pred: dict, gold: dict, report: dict) -> dict:
-    """All per-report metric contributions for one (pred, gold) pair."""
+def evaluate(pred: dict, gold: dict, report: dict) -> tuple[dict, list]:
+    """Per-report metric contributions + concrete error examples."""
     m: dict = defaultdict(Counter)
+    examples: list[dict] = []
     rep_id = gold["report_id"]
     kind = gold.get("case_kind", "?")
 
@@ -72,22 +73,37 @@ def evaluate(pred: dict, gold: dict, report: dict) -> dict:
 
     pairs = align(gold["events"], pred["events"])
     for ge, pe in pairs:
+        m["kind:" + kind]["tp" if ge and pe else "fn" if ge else "fp"] += 1
         if ge and pe:
             m["ev"]["tp"] += 1
         elif ge:
             m["ev"]["fn"] += 1
-            m[f"miss_kind:{kind}"]["fn"] += 1
+            m["miss_kind:" + kind]["fn"] += 1
+            examples.append({"report_id": rep_id, "kind": kind,
+                             "issue": "event_missed", "field": None,
+                             "gold": ge["activity"]["action"],
+                             "pred": None,
+                             "text": report["raw_text"][:110]})
         else:
             m["ev"]["fp"] += 1
-            m[f"miss_kind:{kind}"]["fp"] += 1
+            m["miss_kind:" + kind]["fp"] += 1
+            examples.append({"report_id": rep_id, "kind": kind,
+                             "issue": "event_extra", "field": None,
+                             "gold": None,
+                             "pred": pe["activity"]["action"],
+                             "text": report["raw_text"][:110]})
 
         if ge and pe:
             for name, get in CONF_FIELDS:
                 gv, pv = get(ge), get(pe)
                 ok = _eq_num(gv, pv)
-                m[f"field:{name}"]["ok" if ok else "bad"] += 1
+                m["field:" + name]["ok" if ok else "bad"] += 1
                 if not ok:
-                    m[f"fielderr:{name}:{kind}"]["n"] += 1
+                    m["fielderr:" + name + ":" + kind]["n"] += 1
+                    examples.append({"report_id": rep_id, "kind": kind,
+                                     "issue": "field_mismatch", "field": name,
+                                     "gold": gv, "pred": pv,
+                                     "text": report["raw_text"][:110]})
 
             # unsafe extraction: confident wrong value where gold is null
             for name, get in CONF_FIELDS:
@@ -111,7 +127,7 @@ def evaluate(pred: dict, gold: dict, report: dict) -> dict:
             m["evid"]["covered" if src and src.strip(".") in report["raw_text"]
                      else "uncovered"] += 1
 
-    return m
+    return m, examples
 
 
 def main() -> None:
@@ -124,6 +140,8 @@ def main() -> None:
     ap.add_argument("--model", default="qwen2.5:7b-instruct-q4_K_M")
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--max-examples", type=int, default=14,
+                    help="concrete error examples kept in the output")
     args = ap.parse_args()
 
     if args.paired:
@@ -148,13 +166,15 @@ def main() -> None:
 
     merged: dict = defaultdict(Counter)
     per_report: list[dict] = []
+    examples: list[dict] = []
     t_start = time.time()
     for i, (rep, gold) in enumerate(items, 1):
         t0 = time.time()
         pred = extract(rep, model=args.model, use_cache=not args.no_cache)
         dt = time.time() - t0
         fb = pred.get("_meta", {}).get("fallback", False)
-        m = evaluate(pred, gold, rep)
+        m, exs = evaluate(pred, gold, rep)
+        examples.extend(exs)
         per_report.append({"report_id": rep["report_id"],
                            "case_kind": gold.get("case_kind", "?"),
                            "latency_s": round(dt, 1), "fallback": fb,
@@ -202,7 +222,14 @@ def main() -> None:
         "field_errors_by_kind": {k.split("fielderr:")[1]: c["n"]
                                  for k, c in sorted(merged.items())
                                  if k.startswith("fielderr:")},
+        "case_type_metrics": {k.split("kind:", 1)[1]: {
+                                  "n_events": c["tp"] + c["fn"],
+                                  "event_prf": _prf(c["tp"], c["fp"], c["fn"])}
+                              for k, c in sorted(merged.items())
+                              if k.startswith("kind:")},
         "per_report": per_report,
+        "error_examples": examples[:args.max_examples],
+        "n_error_examples": len(examples),
     }
     for k, c in sorted(merged.items()):
         if k.startswith("field:"):

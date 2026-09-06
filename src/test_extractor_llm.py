@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 
-from extractor_llm import extract
+from extractor_llm import extract, extract_report
 from vocab import WARNINGS
 
 REPORT = {"report_id": "T-1", "source_type": "daily_report",
@@ -207,6 +207,191 @@ def main() -> None:
             print(f"  FAIL  {t.__name__}: {exc}")
     print(f"{len(tests) - failed}/{len(tests)} passed")
     raise SystemExit(1 if failed else 0)
+
+
+
+
+# --- MVP additions: case coverage + stable API + fallback chain ----------
+
+HINGLISH_REPORT = {
+    "report_id": "T-HIN", "source_type": "daily_report",
+    "report_date": "2026-09-01", "discipline": None,
+    "raw_text": "Aaj welding kaam Rack A pe ho gaya 08:00 se 16:00 tak.",
+}
+
+
+def test_partial_progress_quantity():
+    g = good_generation()
+    ev = g["events"][0]
+    ev["execution"]["status"] = "in_progress"
+    ev["quantity"] = {"completed": 5.0, "total": 12.0, "unit": "spool"}
+    ev["warnings"] = ["quantity_partial"]
+    out = extract(REPORT, model="mock", use_cache=False,
+                  client=make_client(g))
+    ev = out["events"][0]
+    assert ev["execution"]["status"] == "in_progress"
+    assert ev["execution"]["progress_percent"] == 42
+    assert "quantity_partial" in ev["warnings"]
+
+
+def test_negative_stays_negated():
+    g = good_generation()
+    ev = g["events"][0]
+    ev["execution"]["status"] = "not_started"
+    ev["execution"]["assertion"] = "negated"
+    ev["execution"]["progress_percent"] = None
+    out = extract(REPORT, model="mock", use_cache=False,
+                  client=make_client(g))
+    ev = out["events"][0]
+    assert ev["execution"]["assertion"] == "negated"
+    assert ev["execution"]["status"] == "not_started"
+    assert ev["execution"]["progress_percent"] is None
+    assert "negated_statement" in ev["warnings"]
+    assert ev["needs_review"] is False  # negation is explicit, not uncertain
+
+
+def test_irrelevant_no_events():
+    g = {"relevance": {"is_relevant": False, "confidence": 0.92,
+                       "reason": "canteen logistics"}, "events": []}
+    out = extract(REPORT, model="mock", use_cache=False,
+                  client=make_client(g))
+    assert out["relevance"]["is_relevant"] is False
+    assert out["events"] == []
+
+
+def test_hinglish_event_extracted():
+    g = {
+        "relevance": {"is_relevant": True, "confidence": 0.9, "reason": "work"},
+        "events": [{
+            "activity": {"description": "welding kaam", "action": "welding"},
+            "execution": {"status": "completed", "assertion": "affirmed",
+                          "progress_percent": 100},
+            "time": {"start": "08:00", "end": "16:00", "certainty": "explicit"},
+            "context": {"discipline": None, "location": "Rack A",
+                        "line_number": None, "equipment": None},
+            "quantity": {"completed": None, "total": None, "unit": None},
+            "issue": {"type": None, "reason": None},
+            "evidence": {"source_text":
+                         "welding kaam Rack A pe ho gaya 08:00 se 16:00 tak"},
+            "confidence": {"overall": 0.85, "activity": 0.9, "status": 0.9,
+                           "time": 0.7},
+            "needs_review": False,
+            "warnings": [],
+        }]}
+    out = extract(HINGLISH_REPORT, model="mock", use_cache=False,
+                  client=make_client(g))
+    ev = out["events"][0]
+    assert ev["activity"]["action"] == "welding"
+    assert ev["execution"]["status"] == "completed"
+    assert ev["time"]["start"] == "2026-09-01T08:00:00"
+    assert ev["context"]["location"] == "Rack A"
+
+
+def test_prompt_declares_multilingual_support():
+    from prompt import SYSTEM_PROMPT
+    low = SYSTEM_PROMPT.lower()
+    for token in ("hindi", "hinglish", "shorthand"):
+        assert token in low, token
+
+
+def test_missing_fields_stay_null():
+    g = good_generation()
+    ev = g["events"][0]
+    ev["context"] = {"discipline": None, "location": None,
+                     "line_number": None, "equipment": None}
+    ev["quantity"] = {"completed": None, "total": None, "unit": None}
+    ev["execution"]["progress_percent"] = None
+    ev["execution"]["status"] = None
+    out = extract(REPORT, model="mock", use_cache=False,
+                  client=make_client(g))
+    ev = out["events"][0]
+    assert ev["context"]["location"] is not None  # sole location recovered
+    assert ev["quantity"] == {"completed": None, "total": None,
+                              "unit": None}
+    assert ev["needs_review"] is True  # unresolvable status -> review
+
+
+def test_retry_once_then_safe_result():
+    client = make_client("still garbage")
+    out = extract(REPORT, model="mock", use_cache=False, client=client)
+    assert client.calls["n"] == 2, "exactly one retry after first failure"
+    assert out["_meta"]["fallback"] is True and out["events"] == []
+
+
+def test_extract_report_stable_api_llm():
+    out = extract_report(REPORT["raw_text"],
+                         metadata={"report_date": "2026-09-01"},
+                         model="mock", use_cache=False,
+                         client=make_client(good_generation()))
+    assert out["_meta"]["engine"] == "llm"
+    assert set(out) >= {"relevance", "events"}
+    assert out["events"][0]["activity"]["action"] == "erection"
+
+
+def test_extract_report_baseline_fallback():
+    out = extract_report(REPORT["raw_text"],
+                         metadata={"report_date": "2026-09-01"},
+                         model="mock", use_cache=False,
+                         client=make_client("garbage"))
+    assert out["_meta"]["engine"] == "baseline"
+    assert out["needs_review"] is True
+    assert out["events"], "baseline must recover the obvious event"
+    assert out["events"][0]["warnings"][-1] == "baseline_fallback"
+
+
+def test_extract_report_nothing_usable_is_safe():
+    out = extract_report("asdf qwer zxcv jkl", metadata=None,
+                         model="mock", use_cache=False,
+                         client=make_client("garbage"))
+    assert out["needs_review"] is True
+    assert out["events"] == []
+    assert out["relevance"]["is_relevant"] is False
+
+
+def test_extract_report_never_raises():
+    # server-side explosion is contained by the API
+    def exploding_client(*a, **k):
+        raise ConnectionError("ollama down")
+    out = extract_report(REPORT["raw_text"],
+                         metadata={"report_date": "2026-09-01"},
+                         model="mock", use_cache=False,
+                         client=exploding_client)
+    assert out["_meta"]["engine"] in ("baseline", "fallback")
+    assert "needs_review" in out
+
+
+
+
+def test_evaluate_captures_case_types_and_examples():
+    from eval_extractor import evaluate
+    gold = {"report_id": "G1", "case_kind": "partial",
+            "relevance": {"is_relevant": True},
+            "events": [{"event_id": "G1-EVT-01",
+                        "activity": {"action": "welding"},
+                        "execution": {"status": "in_progress",
+                                      "progress_percent": 42},
+                        "context": {"discipline": None, "location": "Rack A",
+                                    "line_number": None, "equipment": None},
+                        "time": {"start": None, "end": None},
+                        "quantity": {"completed": 5.0, "total": 12.0}}]}
+    report = {"raw_text": "welding at rack a, 5 of 12 done",
+              "report_id": "G1"}
+    pred = {"relevance": {"is_relevant": True},
+            "events": [{"activity": {"action": "welding"},
+                        "execution": {"status": "completed",
+                                      "progress_percent": None},
+                        "context": {"discipline": None, "location": "Rack A",
+                                    "line_number": None, "equipment": None},
+                        "time": {"start": None, "end": None},
+                        "quantity": {"completed": 5.0, "total": 12.0},
+                        "evidence": {"source_text": "welding at rack a"}}]}
+    m, exs = evaluate(pred, gold, report)
+    assert m["kind:partial"]["tp"] == 1
+    statuses = [e for e in exs if e["field"] == "execution.status"]
+    ok = statuses and statuses[0]["gold"] == "in_progress"
+    ok = ok and statuses[0]["pred"] == "completed"
+    assert ok
+    assert m["field:activity.action"]["ok"] == 1
 
 
 if __name__ == "__main__":

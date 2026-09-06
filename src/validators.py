@@ -10,7 +10,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from schema import normalize_nested
-from vocab import ACTION_ALIASES, LOCATION_ALIASES
+from vocab import ACTION_ALIASES, LOCATION_ALIASES, UNCERTAIN_CUES
+from extractor import detect_relevance, IRRELEVANT_HINTS
 
 
 def _parse_iso(s):
@@ -36,6 +37,13 @@ for _canon, _surfaces in LOCATION_ALIASES.items():
     _LOC_TO_CANON[_canon.lower()] = _canon
     for _s in _surfaces:
         _LOC_TO_CANON[_s.lower()] = _canon
+
+# Site-logistics cues the baseline knows plus a few more seen in LLM
+# hallucinations. Used ONLY to guard the LLM path; the deterministic
+# baseline behavior is unchanged.
+_LLM_IRRELEVANT_HINTS = tuple(IRRELEVANT_HINTS) + (
+    "generator set", "security patrol", "diesel bowser",
+)
 
 # words that describe execution status, never a work type
 _STATUS_WORDS = {
@@ -76,6 +84,35 @@ def _canon_location(value):
             if best is None or len(alias) > len(best[0]):
                 best = (alias, canon)
     return best[1] if best else None
+
+
+def _text_actions(raw: str) -> set:
+    """All canonical actions whose aliases occur in the raw text."""
+    low = raw.lower()
+    found = set()
+    for alias, canon in _ALIAS_TO_ACTION.items():
+        if len(alias) < 4:
+            continue
+        idx = low.find(alias)
+        while idx >= 0:
+            before = low[idx - 1] if idx else " "
+            end = idx + len(alias)
+            after = low[end] if end < len(low) else " "
+            if not before.isalnum() and not after.isalnum():
+                found.add(canon)
+                break
+            idx = low.find(alias, idx + 1)
+    return found
+
+
+def _sole_action_alias(raw: str):
+    """The one canonical action whose alias occurs in the text, else None.
+
+    Multi-activity reports mention several aliases; only unambiguous texts
+    qualify for action recovery.
+    """
+    found = _text_actions(raw)
+    return found.pop() if len(found) == 1 else None
 
 
 def _repair_ts(s, rdate: str | None):
@@ -247,6 +284,17 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
                     nr = True
                     issues.append("overnight_gap_too_large")
 
+        # Unsupported uncertainty: the model hedges although the text has no
+        # hedge word. A clean claim stays affirmed (PDF: no invention).
+        text_probe = " ".join(str(x) for x in (
+            (ev.get("evidence") or {}).get("source_text"),
+            (ev.get("activity") or {}).get("description")) if x)
+        if exx["assertion"] == "uncertain":
+            low_probe = text_probe.lower()
+            if not any(cue in low_probe for cue in UNCERTAIN_CUES):
+                exx["assertion"] = "affirmed"
+                issues.append("unsupported_uncertainty_downgraded")
+
         # Negation can never stand next to a completion-like status.
         if exx["assertion"] == "negated" and exx["status"] in (
                 "completed", "started", "in_progress"):
@@ -255,6 +303,10 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             nr = True
             flags.add("negated_statement")
             issues.append("negation_as_completion")
+
+        # Warning hygiene: every negated claim carries negated_statement.
+        if exx["assertion"] == "negated":
+            flags.add("negated_statement")
 
         # Uncertainty stays uncertain and always needs review.
         if "uncertain_statement" in flags:
@@ -289,6 +341,11 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
             ev["activity"]["action"] = None
             issues.append("action_unrecognized")
             nr = True
+        if ev["activity"]["action"] is None:
+            sole = _sole_action_alias(raw)
+            if sole is not None:
+                ev["activity"]["action"] = sole
+                issues.append("action_recovered_from_text")
 
         # Canonicalize location shorthand ("u-300" -> "Unit 300").
         loc_raw = ev["context"].get("location")
@@ -320,5 +377,27 @@ def validate_extraction(pred: dict, report: dict) -> tuple[dict, list[str]]:
         ev["warnings"] = sorted(flags)
         ev["needs_review"] = nr
         ev.pop("_ev_text", None)
+
+    # High-precision site-logistics guard: the deterministic relevance
+    # detector (baseline knowledge) overrides LLM hallucinations on
+    # canteen/logistics/visitor texts. LLM path only.
+    _rel = detect_relevance(raw)
+    _text_acts = _text_actions(raw)
+    _anchored = any(ev["activity"]["action"] in _text_acts for ev in events)
+    if not _rel["is_relevant"] and events and not _anchored:
+        events = []
+        rel["is_relevant"] = False
+        rel["confidence"] = min(rel.get("confidence", 0.9), 0.95)
+        rel["reason"] = "site-logistics content, no project execution information"
+        issues.append("irrelevant_hint_forced_empty")
+
+    # Drop empty events: no action and no status carries no information.
+    kept = []
+    for ev in events:
+        if ev["activity"]["action"] or ev["execution"]["status"] is not None:
+            kept.append(ev)
+        else:
+            issues.append("empty_event_dropped")
+    events = kept
 
     return {"relevance": rel, "events": events}, issues

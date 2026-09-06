@@ -1,1 +1,168 @@
 === LLM extractor eval: dev 178 reports,model = qwen2.5:7b-instruct-q4_K_M ===
+  [ 1 / 178 ] REP-0006 41.6 s
+  [ 10 / 178 ] REP-0059 35.0 s
+  [ 20 / 178 ] REP-0132 31.9 s
+  [ 30 / 178 ] REP-0173 144.0 s
+  [ 40 / 178 ] REP-0234 33.2 s
+  [ 50 / 178 ] REP-0325 69.7 s
+  [ 60 / 178 ] REP-0385 40.1 s
+  [ 70 / 178 ] REP-0457 39.9 s
+  [ 80 / 178 ] REP-0499 126.2 s
+  [ 90 / 178 ] REP-0540 44.9 s
+  [ 100 / 178 ] REP-0592 38.7 s
+  [ 110 / 178 ] REP-0643 40.9 s
+  [ 120 / 178 ] REP-0702 45.3 s
+  [ 130 / 178 ] REP-0740 41.8 s
+  [ 140 / 178 ] REP-0816 75.5 s
+  [ 150 / 178 ] REP-0854 40.8 s
+  [ 160 / 178 ] REP-0904 40.6 s
+  [ 170 / 178 ] REP-0957 49.1 s
+{
+  "split": "dev",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "n_reports": 178,
+  "wall_time_s": 9023.2,
+  "avg_latency_s": 50.7,
+  "relevance": {
+    "precision": 0.9379,
+    "recall": 1.0,
+    "f1": 0.9679,
+    "tp": 166,
+    "fp": 11,
+    "fn": 0,
+    "tn": 1
+  },
+  "event_detection": {
+    "precision": 0.7928,
+    "recall": 0.8627,
+    "f1": 0.8263,
+    "tp": 176,
+    "fp": 46,
+    "fn": 28
+  },
+  "field_accuracy": {
+    "activity.action": 1.0,
+    "context.equipment": 0.7614,
+    "context.line_number": 0.9205,
+    "context.location": 0.9716,
+    "execution.progress_percent": 0.2955,
+    "execution.status": 0.8409,
+    "quantity.completed": 0.9034,
+    "quantity.total": 0.9261,
+    "time.end": 0.6875,
+    "time.start": 0.7102
+  },
+  "unsafe_extraction": {
+    "count": 58,
+    "rate_per_matched_event": 0.3295,
+    "by_field": {
+      "context.equipment": 25,
+      "context.line_number": 8,
+      "context.location": 2,
+      "execution.progress_percent": 1,
+      "quantity.completed": 7,
+      "quantity.total": 3,
+      "time.end": 12
+    }
+  },
+  "needs_review": {
+    "recall": 1.0,
+    "specificity": 0.0533
+  },
+  "evidence_coverage": 1.0,
+  "fallback_reports": 0,
+  "event_miss_by_kind": {
+    "ambiguous": {
+      "fn": 2,
+      "fp": 2
+    },
+    "conflict": {
+      "fn": 1,
+      "fp": 6
+    },
+    "irrelevant": {
+      "fn": 0,
+      "fp": 10
+    },
+    "multi": {
+      "fn": 8,
+      "fp": 8
+    },
+    "negative": {
+      "fn": 1,
+      "fp": 1
+    },
+    "noisy": {
+      "fn": 3,
+      "fp": 3
+    },
+    "normal_formal": {
+      "fn": 6,
+      "fp": 8
+    },
+    "normal_shorthand": {
+      "fn": 4,
+      "fp": 4
+    },
+    "partial": {
+      "fn": 3,
+      "fp": 3
+    },
+    "suspended": {
+      "fn": 0,
+      "fp": 1
+    }
+  },
+  "field_errors_by_kind": {
+    "context.equipment:conflict": 1,
+    "context.equipment:multi": 7,
+    "context.equipment:negative": 1,
+    "context.equipment:noisy": 4,
+    "context.equipment:normal_formal": 12,
+    "context.equipment:normal_shorthand": 8,
+    "context.equipment:partial": 7,
+    "context.equipment:suspended": 2,
+    "context.line_number:noisy": 2,
+    "context.line_number:normal_formal": 5,
+    "context.line_number:normal_shorthand": 2,
+    "context.line_number:partial": 5,
+    "context.location:conflict": 1,
+    "context.location:noisy": 3,
+    "context.location:normal_formal": 1,
+    "execution.progress_percent:ambiguous": 10,
+    "execution.progress_percent:conflict": 7,
+    "execution.progress_percent:multi": 31,
+    "execution.progress_percent:noisy": 23,
+    "execution.progress_percent:normal_formal": 30,
+    "execution.progress_percent:normal_shorthand": 20,
+    "execution.progress_percent:partial": 3,
+    "execution.status:conflict": 7,
+    "execution.status:multi": 10,
+    "execution.status:noisy": 2,
+    "execution.status:partial": 2,
+    "execution.status:suspended": 7,
+    "quantity.completed:conflict": 7,
+    "quantity.completed:multi": 1,
+    "quantity.completed:noisy": 3,
+    "quantity.completed:normal_formal": 3,
+    "quantity.completed:partial": 3,
+    "quantity.total:conflict": 7,
+    "quantity.total:multi": 1,
+    "quantity.total:noisy": 2,
+    "quantity.total:partial": 3,
+    "time.end:ambiguous": 1,
+    "time.end:multi": 21,
+    "time.end:noisy": 5,
+    "time.end:normal_formal": 11,
+    "time.end:normal_shorthand": 7,
+    "time.end:partial": 5,
+    "time.end:suspended": 5,
+    "time.start:ambiguous": 1,
+    "time.start:multi": 6,
+    "time.start:noisy": 7,
+    "time.start:normal_formal": 12,
+    "time.start:normal_shorthand": 12,
+    "time.start:partial": 6,
+    "time.start:suspended": 7
+  }
+}

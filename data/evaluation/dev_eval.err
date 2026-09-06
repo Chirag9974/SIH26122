@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "F:\vs_programs\SIH\src\eval_extractor.py", line 221, in <module>
+    and (c["fn"] or c["fp"])},
+    
+  File "F:\vs_programs\SIH\src\eval_extractor.py", line 216, in main
+    "fallback_reports": merged["flags"]["fallback_reports"],
+  File "C:\Users\Chirag Agarwal\AppData\Local\Python\pythoncore-3.14-64\Lib\pathlib\__init__.py", line 809, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chirag Agarwal\AppData\Local\Python\pythoncore-3.14-64\Lib\pathlib\__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '..\\data\\evaluation\\metrics_llm_dev.json'

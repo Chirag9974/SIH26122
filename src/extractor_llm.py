@@ -28,7 +28,7 @@ from validators import validate_extraction
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "data" / "evaluation"
 OLLAMA_URL = "http://127.0.0.1:11434"
-RETRY_LIMIT = 2
+RETRY_LIMIT = 1  # MVP directive: one retry, then a safe review result
 TIMEOUT_S = 300
 
 
@@ -204,3 +204,84 @@ def extract(report: dict, model: str = "qwen2.5:7b-instruct-q4_K_M", *,
             "relevance": final["relevance"],
             "events": final["events"],
             "_meta": meta}
+
+
+# ---------------------------------------------------------------------------
+# stable public API (MVP): one call, frozen JSON out
+# ---------------------------------------------------------------------------
+
+def extract_report(report_text: str, metadata: dict | None = None,
+                   model: str = "qwen2.5:7b-instruct-q4_K_M", *,
+                   use_cache: bool = True, client=None) -> dict:
+    """Stable MVP entry point.
+
+    extract_report(report_text, metadata=None) -> frozen extraction JSON:
+      {"relevance": {...}, "events": [...], "needs_review": bool,
+       "engine": "llm|baseline|fallback", "warnings": [...]}
+
+    Chain: LLM structured output -> Pydantic -> deterministic validators.
+    On LLM failure the deterministic baseline extractor (src/extractor.py)
+    fills the same frozen shape; if even that yields nothing usable, the
+    result is a safe needs_review=true stub. Never raises to the caller.
+    """
+    metadata = dict(metadata or {})
+    report_id = metadata.get("report_id", "API-1")
+    report = {
+        "report_id": report_id,
+        "source_type": metadata.get("source_type", "daily_report"),
+        "report_date": metadata.get("report_date", "1970-01-01"),
+        "discipline": metadata.get("discipline"),
+        "raw_text": report_text,
+    }
+
+    # 1) LLM path (already runs schema + deterministic validation)
+    try:
+        out = extract(report, model=model, use_cache=use_cache,
+                      client=client)
+    except Exception as e:  # server down / timeout: never crash the caller
+        out = _fallback(report, f"llm unavailable: {e}")
+
+    if not out.get("_meta", {}).get("fallback", False):
+        meta = dict(out["_meta"])
+        meta["engine"] = "llm"
+        out["_meta"] = meta
+        return out
+
+    # 2) LLM failed -> deterministic baseline fills the frozen shape.
+    from extractor import extract as baseline_extract
+    try:
+        base = baseline_extract(report)
+    except Exception:
+        base = {"events": []}
+
+    events = []
+    for i, ev in enumerate(base.get("events", []), start=1):
+        events.append({
+            "event_id": ev.get("event_id", f"{report_id}-EVT-{i:02d}"),
+            "activity": ev.get("activity", {}),
+            "execution": ev.get("execution", {}),
+            "time": ev.get("time", {}),
+            "context": ev.get("context", {}),
+            "quantity": ev.get("quantity", {}),
+            "issue": {"type": None, "reason": None},
+            "evidence": ev.get("evidence", {}),
+            "confidence": ev.get("confidence", {}),
+            "needs_review": True,  # baseline path is always review-flagged
+            "warnings": sorted(set(ev.get("warnings", [])
+                                   + ["baseline_fallback"])),
+        })
+    rel = base.get("relevance") or out["relevance"]
+    if events:
+        relevance = {"is_relevant": True,
+                     "confidence": min(0.6, rel.get("confidence", 0.5)),
+                     "reason": "deterministic baseline extraction"
+                               " (LLM unavailable/invalid)"}
+    else:
+        relevance = dict(rel)
+    return {"document": out.get("document", report),
+            "relevance": relevance,
+            "events": events,
+            "needs_review": True,
+            "_meta": {"engine": "baseline", "fallback": True,
+                      "fallback_reason": out["_meta"].get("fallback_reason"),
+                      "validator_issues": []}}
