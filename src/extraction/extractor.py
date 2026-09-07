@@ -335,9 +335,17 @@ def extract(report: dict) -> dict:
     # with a status cue but no action inherits the previous sentence's action.
     prev_action: str | None = None
     prev_ctx: dict | None = None
+    cursor = 0  # raw-text position of the current sentence (evidence contiguity)
 
     for seg in _sentences(text):
         seg_low = seg.lower()
+        seg_start = low.find(seg_low, cursor)
+        if seg_start < 0:
+            seg_start = low.find(seg_low)
+            if seg_start < 0:
+                seg_start = cursor
+        seg_end = seg_start + len(seg)
+        cursor = max(cursor, seg_end)
         hits = _find_all_actions(seg_low)
         qty = parse_quantity(seg_low)
         has_partial = qty[0] is not None and qty[1] is not None and qty[0] < qty[1]
@@ -400,7 +408,16 @@ def extract(report: dict) -> dict:
                 tgt["time"]["time_certainty"] = "explicit"
                 if "missing_time" in tgt["warnings"]:
                     tgt["warnings"].remove("missing_time")
-            tgt["evidence"]["source_text"] += " " + seg
+            # evidence must stay a traceable span: join the continuation
+            # sentence only when it directly follows the quoted one, else
+            # quote just the latest sentence (skipped sentences would make
+            # the evidence impossible to locate in the raw text)
+            prev_end = tgt.get("_ev_evid_end")
+            if prev_end is not None and not text[prev_end:seg_start].strip():
+                tgt["evidence"]["source_text"] += " " + seg
+            else:
+                tgt["evidence"]["source_text"] = seg
+            tgt["_ev_evid_end"] = seg_end
             tgt["confidence"] = _confidence(tgt, seg_low)
             continue
 
@@ -459,6 +476,7 @@ def extract(report: dict) -> dict:
                 "warnings": sorted(set(warnings)),
             }
             ev["confidence"] = _confidence(ev, seg_low)
+            ev["_ev_evid_end"] = seg_end
             events.append(ev)
             prev_action, prev_ctx = action, ev["context"]
 
@@ -470,6 +488,7 @@ def extract(report: dict) -> dict:
             ev["warnings"] = sorted(set(ev["warnings"] + ["possible_duplicate"]))
         else:
             seen_keys[key] = ev["event_id"]
+        ev.pop("_ev_evid_end", None)  # internal evidence-position helper
 
     return {"document": doc, "relevance": relevance, "events": events}
 

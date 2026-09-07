@@ -188,6 +188,42 @@ def _recover_location(raw: str):
     return found.pop() if len(found) == 1 else None
 
 
+def _locate_span(raw: str, seg: str):
+    """Whitespace-insensitive fallback locator.
+
+    Returns (start, end) in *raw* of the segment matched with collapsed
+    whitespace/case, or None. Rescues evidence that quotes across PDF
+    line-wraps (the extractor may join segments with single spaces).
+    """
+    def norm_with_map(s):
+        out, idx, last_space = [], [], True
+        for i, ch in enumerate(s):
+            if ch.isspace():
+                if not last_space:
+                    out.append(" ")
+                    idx.append(i)
+                    last_space = True
+                continue
+            out.append(ch.lower())
+            idx.append(i)
+            last_space = False
+        return "".join(out), idx
+
+    nr, idx = norm_with_map(raw)
+    ns, _ = norm_with_map(seg)
+    if not ns or len(ns) > len(nr):
+        return None
+    j = nr.find(ns)
+    while j != -1:
+        before = nr[j - 1] if j else " "
+        k = j + len(ns)
+        after = nr[k] if k < len(nr) else " "
+        if not before.isalnum() and not after.isalnum():
+            return idx[j], idx[k - 1] + 1
+        j = nr.find(ns, j + 1)
+    return None
+
+
 def _locate(raw: str, seg: str):
     """Start index of seg in raw (case-insensitive, word-bounded preferred)."""
     low, segl = raw.lower(), seg.lower().strip()
@@ -219,6 +255,9 @@ def _evidence_span(raw: str, ev: dict):
         i = _locate(raw, seg)
         if i is not None:
             return raw[i:i + len(seg.strip())].strip(), None
+        span = _locate_span(raw, seg)
+        if span is not None:
+            return raw[span[0]:span[1]].strip(), None
     return None, "unsupported_evidence"
 
 

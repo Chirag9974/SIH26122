@@ -3,7 +3,7 @@
   "model": "qwen2.5:7b-instruct-q4_K_M",
   "n_reports": 178,
   "n_pending": 0,
-  "rescore_seconds": 1.6,
+  "rescore_seconds": 1.3,
   "relevance": {
     "precision": 0.9822,
     "recall": 1.0,
